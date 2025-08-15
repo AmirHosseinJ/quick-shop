@@ -1,0 +1,40 @@
+/* Floating cart action button */
+/*.cart-fab {*/
+/*    position: fixed;*/
+/*    bottom: 24px;*/
+/*    right: 24px;*/
+/*    z-index: 1051; !* above offcanvas backdrop *!*/
+/*    border-radius: 999px;*/
+/*    padding-inline: 16px;*/
+/*    display: inline-flex;*/
+/*    align-items: center;*/
+/*    gap: 8px;*/
+/*}*/
+
+/* Product card subtle hover */
+.product-card {
+    transition: transform 120ms ease, box-shadow 120ms ease;
+}
+.product-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,.15);
+}
+
+/* Small nicer number input appearance */
+.qty-input::-webkit-outer-spin-button,
+.qty-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+.qty-input {
+    appearance: textfield;
+}
+.card-qty-badge {
+    z-index: 2;
+    margin: 8px 0 0 8px; /* nudge from top-left corner */
+}
+
+#categories-menu {
+    background-color: rgba(255, 255, 255, 0.73);
+    padding-bottom: 10px;
+}

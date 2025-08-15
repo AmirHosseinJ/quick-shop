@@ -1,0 +1,19 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+@font-face {
+    font-family: 'IRANSansWeb-FaNum-Medium';
+    src: url('/fonts/IRANSansWeb(FaNum)_Medium.eot'); /* IE9 Compatibility */
+    src: url('/fonts/IRANSansWeb(FaNum)_Medium.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */ url('/fonts/IRANSansWeb(FaNum)_Medium.woff') format('woff'), /* Modern Browsers */ url('/fonts/IRANSansWeb(FaNum)_Medium.ttf') format('truetype'); /* Legacy Browsers */
+    font-weight: 500;
+    font-style: normal;
+}
+
+/* Apply global font styles */
+body {
+    font-family: 'IRANSansWeb-FaNum-Medium', sans-serif !important;
+}
