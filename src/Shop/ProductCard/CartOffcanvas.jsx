@@ -72,7 +72,11 @@ export default function CartOffcanvas({formatIRR}) {
                         <button className="btn btn-outline-danger w-25" onClick={clear} disabled={!items.length}>
                             پاک کردن
                         </button>
-                        <button className="btn btn-success w-75" disabled={!items.length}>
+                        <button
+                            className="btn btn-success w-75"
+                            disabled={!items.length}
+                            data-bs-dismiss="offcanvas"  // This will close the offcanvas when clicked
+                        >
                             ادامه خرید
                         </button>
 
