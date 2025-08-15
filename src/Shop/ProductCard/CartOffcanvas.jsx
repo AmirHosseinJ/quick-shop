@@ -1,8 +1,8 @@
 import React from "react";
-import { useCart } from "../CartContext/CartContext";
+import {useCart} from "../CartContext/CartContext";
 
-export default function CartOffcanvas({ formatIRR }) {
-    const { items, setQty, removeItem, clear, total } = useCart();
+export default function CartOffcanvas({formatIRR}) {
+    const {items, setQty, removeItem, clear, total} = useCart();
 
     return (
         <div
@@ -23,7 +23,7 @@ export default function CartOffcanvas({ formatIRR }) {
                     <ul className="list-group mb-3">
                         {items.map((x) => (
                             <li className="list-group-item d-flex gap-2 align-items-center" key={x.id}>
-                                <img src={x.image} alt={x.name} width={48} height={48} className="rounded" />
+                                <img src={x.image} alt={x.name} width={48} height={48} className="rounded"/>
                                 <div className="flex-grow-1">
                                     <div className="fw-semibold">{x.name}</div>
                                     <small className="text-muted">{x.brand}</small>
@@ -42,7 +42,7 @@ export default function CartOffcanvas({ formatIRR }) {
                                         min="1"
                                         value={x.qty}
                                         onChange={(e) => setQty(x.id, Number(e.target.value || 1))}
-                                        style={{ width: 64 }}
+                                        style={{width: 64}}
                                     />
                                     <button
                                         className="btn btn-sm btn-outline-secondary"
@@ -74,6 +74,12 @@ export default function CartOffcanvas({ formatIRR }) {
                         </button>
                         <button className="btn btn-success w-75" disabled={!items.length}>
                             ادامه خرید
+                        </button>
+
+                    </div>
+                    <div className="d-flex mt-2">
+                        <button className="btn btn-primary w-100" disabled={!items.length}>
+                            تسویه حساب
                         </button>
                     </div>
                 </div>
