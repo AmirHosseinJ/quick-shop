@@ -1,15 +1,15 @@
-/* Floating cart action button */
-/*.cart-fab {*/
-/*    position: fixed;*/
-/*    bottom: 24px;*/
-/*    right: 24px;*/
-/*    z-index: 1051; !* above offcanvas backdrop *!*/
-/*    border-radius: 999px;*/
-/*    padding-inline: 16px;*/
-/*    display: inline-flex;*/
-/*    align-items: center;*/
-/*    gap: 8px;*/
-/*}*/
+
+.cart-fab {
+    /*position: fixed;*/
+    /*bottom: 24px;*/
+    /*right: 24px;*/
+    z-index: 1051; /* above offcanvas backdrop */
+    border-radius: 999px;
+    padding-inline: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
 
 /* Product card subtle hover */
 .product-card {
