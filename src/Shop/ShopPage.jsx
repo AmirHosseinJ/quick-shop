@@ -69,6 +69,7 @@ export default function ShopPage() {
 
 
                 <div className="row">
+
                     {/* Products */}
                     <div className="col-lg-10">
                         <div className="row g-3">
@@ -91,7 +92,7 @@ export default function ShopPage() {
                     {/* Brands Sidebar */}
                     <div className="col-lg-2 mb-4">
                         <div className="list-group">
-                            <div className="list-group-item active">برندها</div>
+                            <div className="list-group-item active sticky-top mt-5">برندها</div>
                             {brands.map((brand) => (
                                 <button
                                     key={brand}
