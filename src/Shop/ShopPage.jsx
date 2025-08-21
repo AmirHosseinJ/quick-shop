@@ -15,16 +15,6 @@ const NONCE_KEY = "wc_nonce";
 const CART_ITEMS_KEY = "cart_items";
 const CART_ITEMS_V1_KEY = "cart_items_v1";
 
-// If Woo is in rials and UI shows tomans, divide by 10
-const formatIRRtoToman = (n) =>
-    new Intl.NumberFormat("fa-IR", {
-        style: "currency",
-        currency: "IRR",
-        maximumFractionDigits: 0,
-    })
-        .format(Math.round(Number(n || 0) / 10))
-        .replace("ریال", "تومان");
-
 export default function ShopPage() {
     const [categories, setCategories] = useState([]);
     const [brands, setBrands] = useState([]);
@@ -33,16 +23,35 @@ export default function ShopPage() {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [cartItems, setCartItems] = useState([]);
+
+    const [productsByCategory, setProductsByCategory] = useState({}); // { cat: [] }
+    const [loadingCats, setLoadingCats] = useState(new Set());       // track cats loading
+
     const {removeItem, setQty, hydrate} = useCart(); // to remove locally after remote ops
 
 
-    const WBaseUrl = "https://localhost/medline/wp-json/wc/store/v1";
+    const WBaseUrl = "https://localhost/medline2/wp-json/wc/store/v1";
     const nonce = localStorage.getItem(NONCE_KEY);
     const cart_token = localStorage.getItem(CART_TOKEN_KEY);
 
     // Memoize clients to avoid re-instantiation
     const reHttpClient = useMemo(() => new HttpClient(), []);
     const wooHttpClient = useMemo(() => new HttpClient(WBaseUrl), [WBaseUrl]);
+
+    // Fetch categories separately
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await reHttpClient.get("/categories");
+                const data = response.data?.data || [];
+                setCategories(data); // because API returns an array of strings
+            } catch (err) {
+                console.error("Error fetching categories:", err);
+            }
+        };
+
+        fetchCategories();
+    }, [reHttpClient]);
 
 
     // Fetch cart (headers + body)
@@ -75,39 +84,50 @@ export default function ShopPage() {
         fetchCartHeaderToken();
     }, [wooHttpClient]);
 
-    // Fetch products
+    // Fetch products per category (parallel, visible as soon as they load)
     useEffect(() => {
-        const fetchProducts = async () => {
-            setLoading(true);
+        if (!categories.length) return;
+
+        const fetchByCat = async (cat) => {
+            setLoadingCats((prev) => new Set(prev).add(cat));
             try {
-                const response = await reHttpClient.get("/products");
-                const data = response.data?.data || [];
+                const res = await reHttpClient.get("/products", {
+                    params: { per_page: 0, category: cat }, // 👈 change param if API differs
+                });
+                const items = res.data?.data || [];
 
-                // Derive categories & brands safely
-                const parentCategories = [
-                    ...new Set(
-                        data.flatMap((p) => (p?.parent_categories || []).map((c) => c?.name).filter(Boolean))
-                    ),
-                ];
-                setCategories(parentCategories);
+                setProductsByCategory((prev) => ({ ...prev, [cat]: items }));
+                setProducts((prev) => {
+                    const merged = [...prev, ...items];
+                    return [...new Map(merged.map((p) => [p.id, p])).values()]; // dedupe by id
+                });
 
+                // add brands
                 const productBrands = [
                     ...new Set(
-                        data.flatMap((p) => (p?.brands || []).map((b) => b?.name).filter(Boolean))
+                        items.flatMap((p) =>
+                            (p?.brands || []).map((b) => b?.name).filter(Boolean)
+                        )
                     ),
                 ];
-                setBrands(productBrands);
-
-                setProducts(data);
-            } catch (err) {
-                console.error("Error fetching products:", err);
+                setBrands((prev) => [...new Set([...prev, ...productBrands])]);
+            } catch (e) {
+                console.error(`Failed to fetch products for ${cat}`, e);
+                setProductsByCategory((prev) => ({ ...prev, [cat]: [] }));
             } finally {
-                setLoading(false);
+                setLoadingCats((prev) => {
+                    const copy = new Set(prev);
+                    copy.delete(cat);
+                    return copy;
+                });
             }
         };
 
-        fetchProducts();
-    }, [reHttpClient]);
+        categories.forEach((cat) => fetchByCat(cat));
+    }, [categories, reHttpClient]);
+
+
+
 
     // Map cart items → v1 format *after* we have items
     useEffect(() => {
@@ -228,6 +248,10 @@ export default function ShopPage() {
         [wooHttpClient, nonce, setQty]
     );
 
+    const visibleProducts = selectedCategory
+        ? (productsByCategory[selectedCategory] || [])
+        : products; // "All" = merged products
+
 
     return (
         <>
@@ -255,17 +279,14 @@ export default function ShopPage() {
                     {/* Products */}
                     <div className="col-lg-10">
                         <div className="row g-3">
-                            {loading
+                            {selectedCategory && loadingCats.has(selectedCategory)
                                 ? Array.from({length: 8}).map((_, i) => <ProductCardPlaceholder key={i}/>)
-                                : products
+                                : visibleProducts
                                     .filter((product) => {
-                                        const isCategoryMatch =
-                                            !selectedCategory ||
-                                            (product?.parent_categories || []).some((cat) => cat?.name === selectedCategory);
                                         const isBrandMatch =
                                             !selectedBrand ||
                                             (product?.brands || []).some((brand) => brand?.name === selectedBrand);
-                                        return isCategoryMatch && isBrandMatch;
+                                        return isBrandMatch;
                                     })
                                     .map((p) =>
                                         p?.variations?.length ? (
