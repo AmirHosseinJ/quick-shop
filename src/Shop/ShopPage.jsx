@@ -45,6 +45,9 @@ export default function ShopPage() {
                 const response = await reHttpClient.get("/categories");
                 const data = response.data?.data || [];
                 setCategories(data); // because API returns an array of strings
+                if (data.length > 0) {
+                    setSelectedCategory(data[0]); // 👈 auto-select first
+                }
             } catch (err) {
                 console.error("Error fetching categories:", err);
             }
