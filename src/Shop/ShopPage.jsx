@@ -273,6 +273,7 @@ export default function ShopPage() {
                                                 key={p.id}
                                                 product={p}
                                                 formatIRR={formatIRR} // pass your formatter
+                                                onUpdateQty={onUpdateQty}
                                             />
                                         ) : (
                                             <ProductCard

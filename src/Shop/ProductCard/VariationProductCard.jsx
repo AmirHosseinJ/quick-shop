@@ -1,5 +1,5 @@
-// src/components/ProductCard/VariationProductCard.jsx
-import React, {useMemo, useState, useEffect} from "react";
+import React, {useMemo, useState, useEffect, useRef} from "react";
+import debounce from "lodash.debounce";
 import {useCart} from "../CartContext/CartContext";
 
 // Optional: map attribute slugs to user-friendly labels
@@ -44,8 +44,22 @@ function findMatchingVariation(variations, selectedAttrs) {
     });
 }
 
-export default function VariationProductCard({product, formatIRR}) {
+export default function VariationProductCard({product, formatIRR, onUpdateQty}) {
     const {items, addItem, setQty, removeItem} = useCart();
+
+    const updateRef = useRef(onUpdateQty);
+
+    useEffect(() => {
+        updateRef.current = onUpdateQty;
+    }, [onUpdateQty]);
+
+    const debouncedUpdateQty = useMemo(
+        () => debounce((item, val) => updateRef.current && updateRef.current(item, val), 1500, {
+            leading: false,
+            trailing: true
+        }),
+        []
+    );
 
     const variations = product?.variations || [];
     const attrOptions = useMemo(() => buildAttributeOptions(variations), [variations]);
@@ -70,6 +84,8 @@ export default function VariationProductCard({product, formatIRR}) {
 
     // Build a stable cart ID: use variation id so +/- affects the correct variant
     const cartId = selectedVariation?.id ?? product?.id ?? 0;
+
+    const currentItem = useMemo(() => items.find((x) => x.id === cartId), [items, cartId]);
 
     // Resolve display values
     const image =
@@ -121,6 +137,7 @@ export default function VariationProductCard({product, formatIRR}) {
             },
             1
         );
+        debouncedUpdateQty(currentItem || {id: selectedVariation.id, name: nameWithAttrs}, Math.max(1, min));
     };
 
     const handleChange = (nextVal) => {
@@ -135,23 +152,35 @@ export default function VariationProductCard({product, formatIRR}) {
 
         if (next <= 0) {
             removeItem(cartId);
+            debouncedUpdateQty(currentItem || {id: cartId}, 0);
             return;
         }
+
         const clamped = Math.min(next, Number.isFinite(max) ? max : next);
         const snapped = Math.max(min, clamped - ((clamped - min) % step));
         setQty(cartId, snapped);
+        debouncedUpdateQty(currentItem || {id: cartId}, snapped);
     };
 
     const onMinus = () => {
         if (!selectedVariation) return;
+        const ql = selectedVariation?.quantity_limits || product?.quantity_limits || {};
+        const min = Number.isFinite(ql?.minimum) ? ql.minimum : 1;
 
-        if (isSoldIndividually) {
+        if ((selectedVariation?.sold_individually ?? product?.sold_individually)) {
             removeItem(cartId);
+            debouncedUpdateQty(currentItem || {id: cartId}, 0);
             return;
         }
 
-        if (qtyInCart > min) setQty(cartId, Math.max(min, qtyInCart - step));
-        else removeItem(cartId);
+        if (qtyInCart > min) {
+            const n = Math.max(min, qtyInCart - (Number.isFinite(ql?.multiple_of) ? Math.max(1, ql.multiple_of) : 1));
+            setQty(cartId, n);
+            debouncedUpdateQty(currentItem || {id: cartId}, n);
+        } else {
+            removeItem(cartId);
+            debouncedUpdateQty(currentItem || {id: cartId}, 0);
+        }
     };
 
     const onPlus = () => {
@@ -166,6 +195,7 @@ export default function VariationProductCard({product, formatIRR}) {
         const clamped = Math.min(next, Number.isFinite(max) ? max : next);
         if (qtyInCart === 0) onAdd();
         else setQty(cartId, clamped);
+        debouncedUpdateQty(currentItem || { id: cartId }, clamped);
     };
 
     const stockStatus = selectedVariation?.stock_status || product?.stock_status;
@@ -174,12 +204,13 @@ export default function VariationProductCard({product, formatIRR}) {
         <div className="col-sm-6 col-md-4 col-lg-3">
             <div className="card h-100 product-card position-relative">
                 {qtyInCart > 0 && (
-                    <span className="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-success card-qty-badge">
+                    <span
+                        className="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-success card-qty-badge">
                         {qtyInCart}
                     </span>
                 )}
 
-                <img src={image} className="card-img-top" alt={product?.name || "product"} />
+                <img src={image} className="card-img-top" alt={product?.name || "product"}/>
 
                 <div className="card-body d-flex flex-column">
                     <h6 className="card-title">{nameWithAttrs}</h6>
@@ -247,7 +278,7 @@ export default function VariationProductCard({product, formatIRR}) {
                                     <input
                                         type="number"
                                         className="form-control form-control-sm qty-input text-center"
-                                        style={{ width: 64 }}
+                                        style={{width: 64}}
                                         min={isSoldIndividually ? 1 : min}
                                         step={isSoldIndividually ? 1 : step}
                                         max={isSoldIndividually ? 1 : (Number.isFinite(max) ? max : undefined)}

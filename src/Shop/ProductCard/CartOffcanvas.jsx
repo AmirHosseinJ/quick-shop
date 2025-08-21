@@ -188,7 +188,6 @@ export default function CartOffcanvas({formatIRR, onRemoveRemoteItem, onCheckout
                                 >
                                     −
                                 </button>
-                                {console.log("x: ", x)}
                                 <input
                                     type="number"
                                     className="form-control form-control-sm qty-input"
