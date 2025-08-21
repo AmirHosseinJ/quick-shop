@@ -4,19 +4,21 @@ class HttpClient {
     constructor(baseURL) {
         // Allow passing baseURL for different endpoints
         this.client = axios.create({
-            baseURL: baseURL || 'http://localhost/medline/wp-json/wooheadless/v1', // Default to RBaseUrl if no baseURL is passed
+            baseURL: baseURL || 'https://localhost/medline/wp-json/wooheadless/v1', // Default to RBaseUrl if no baseURL is passed
             headers: {
                 'Content-Type': 'application/json',
                 // Add auth token dynamically in request interceptor
             },
+            withCredentials: true,
         });
 
         // Interceptor to add the token to each request
         this.client.interceptors.request.use(
             (config) => {
-                const token = localStorage.getItem('token'); // Retrieve token from localStorage
-                if (token) {
-                    config.headers['Authorization'] = `Bearer ${token}`; // Add token to headers if it exists
+                const cart_token = localStorage.getItem('cart_token'); // Retrieve token from localStorage
+                if (cart_token) {
+                    // config.headers['Authorization'] = `Bearer ${token}`; // Add token to headers if it exists
+                    config.headers['Cart-Token'] = cart_token; // Add nonce to headers if it exists
                 }
                 return config;
             },
