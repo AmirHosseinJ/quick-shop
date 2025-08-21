@@ -285,6 +285,7 @@ export default function ShopPage() {
                                                 formatIRR={formatIRR}
                                                 quantity_limits={p.quantity_limits}
                                                 sold_individually={!!p.sold_individually}
+                                                onUpdateQty={onUpdateQty}
                                             />
                                         )
                                     )}
