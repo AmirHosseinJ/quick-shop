@@ -4,14 +4,17 @@ import HttpClient from "../../api/HttpClient.js";
 import debounce from "lodash.debounce";
 
 export default function CartOffcanvas({formatIRR, onRemoveRemoteItem, onCheckout, onUpdateQty}) {
-    const {items, removeItem, clear, total, setQty} = useCart();
+    const {items, clear, total, setQty} = useCart();
+
+    const [clearing, setClearing] = React.useState(false);
+
     const CART_TOKEN_KEY = "wc_cart_token";
     const NONCE_KEY = "wc_nonce";
 
     const WBaseUrl = "https://localhost/medline/wp-json/wc/store/v1";
     const httpClient = new HttpClient(WBaseUrl);
     const nonce = localStorage.getItem(NONCE_KEY);
-    const cart_token = localStorage.getItem(CART_TOKEN_KEY);
+    // const cart_token = localStorage.getItem(CART_TOKEN_KEY);
 
     const updateRef = useRef(onUpdateQty);
     useEffect(() => {
@@ -26,99 +29,6 @@ export default function CartOffcanvas({formatIRR, onRemoveRemoteItem, onCheckout
         , []);
 
     useEffect(() => () => debouncedUpdateQty.cancel(), [debouncedUpdateQty]);
-
-// This function will be used to send the cart items to WooCommerce API
-    // This function will be used to send the cart items to WooCommerce API
-    function sendCart() {
-        // Always use the live items from CartContext so variation IDs are correct
-        if (!items || items.length === 0) {
-            console.log("Cart is empty");
-            return;
-        }
-
-        // Build Store API batch payload
-        const cartData = {
-            requests: items.map((item) => {
-                // Expect item.id to be:
-                // - simple product id for simple products
-                // - variation id for variable products (from VariationProductCard)
-                const body = {
-                    id: item.id,
-                    quantity: Number(item.qty || 1),
-                };
-
-                return {
-                    path: "/wc/store/v1/cart/add-item",
-                    method: "POST",
-                    cache: "no-store",
-                    body,
-                    headers: {
-                        // Both headers help keep the same WC Store API cart/session
-                        Nonce: nonce || "",
-                        // "Cart-Token": cart_token || "",
-                    },
-                };
-            }),
-        };
-
-        httpClient
-            .post("/batch", cartData)
-            .then((response) => {
-                let success = true;
-
-                // Validate each request's result
-                const batch = response?.data?.responses || [];
-                batch.forEach((itemResponse) => {
-                    const status = itemResponse?.status;
-                    // Woo adds 201 Created on success for add-item
-                    if (status === 201) {
-                        const added = itemResponse?.body?.items?.[0];
-                        console.log("Item added successfully:", added?.name || "(unknown)");
-                    } else {
-                        const failed = itemResponse?.body?.items?.[0];
-                        console.error(
-                            "Error adding item to cart:",
-                            failed?.name || "(unknown)",
-                            status
-                        );
-                        success = false;
-                    }
-                });
-
-                if (success) {
-                    console.log("All items added successfully");
-                    // window.location.href = "https://localhost/medline/checkout";
-                    window.location.href = `https://localhost/medline/checkout?cart_token=${encodeURIComponent(cart_token)}`;
-
-                }
-            })
-            .catch((error) => {
-                console.error("Request failed", error);
-            });
-    }
-
-    async function handleRemoveItem(item) {
-        try {
-            // If Woo gave us a line item key → remove via API too
-            if (item?.key) {
-
-                await httpClient.post(`/cart/remove-item?key=${item.key}`, null, {
-                    headers: {
-                        Nonce: nonce,
-                    },
-                });
-
-                console.log(`Removed from WooCommerce cart: ${item.name}`);
-            }
-
-            // Always remove from local cart context
-            removeItem(item.id);
-        } catch (err) {
-            console.error("Failed to remove item from WooCommerce:", err);
-            // still remove locally so UI updates
-            removeItem(item.id);
-        }
-    }
 
     const handleRemove = async (item) => {
         try {
@@ -142,6 +52,27 @@ export default function CartOffcanvas({formatIRR, onRemoveRemoteItem, onCheckout
         setQty(item.id, qty, item.key);
         // Woo: debounced (fires ONCE with the last qty)
         debouncedUpdateQty(item, qty);
+    };
+
+    // Clear the entire Woo cart, then clear local
+    const handleClearAll = async () => {
+        if (!items.length || clearing) return;
+        try {
+            setClearing(true);
+            await httpClient.delete("/cart/items", {
+                headers: { Nonce: nonce || "" },
+            });
+            // keep UI in sync after server success
+            clear();
+            console.log("Cart cleared remotely and locally");
+        } catch (err) {
+            console.error("Failed to clear WooCommerce cart:", err);
+            // optional: still clear UI if you want a “best effort” UX
+            // clear();
+            alert("خطا در پاک کردن سبد خرید. لطفاً دوباره تلاش کنید.");
+        } finally {
+            setClearing(false);
+        }
     };
 
     return (
@@ -228,7 +159,11 @@ export default function CartOffcanvas({formatIRR, onRemoveRemoteItem, onCheckout
                         <div className="fw-bold text-success">{formatIRR(total)}</div>
                     </div>
                     <div className="d-flex gap-2">
-                        <button className="btn btn-outline-danger w-25" onClick={clear} disabled={!items.length}>
+                        <button
+                            className="btn btn-outline-danger w-25"
+                            onClick={handleClearAll}
+                            disabled={!items.length || clearing}
+                        >
                             پاک کردن
                         </button>
                         <button

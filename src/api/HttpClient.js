@@ -49,6 +49,10 @@ class HttpClient {
     post(url, data, config = {}) {
         return this.client.post(url, data, config);
     }
+
+    delete(url, config = {}) {
+        return this.client.delete(url, config);
+    }
 }
 
 export default HttpClient;
