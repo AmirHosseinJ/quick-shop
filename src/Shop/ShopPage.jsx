@@ -170,13 +170,19 @@ export default function ShopPage() {
             if (!liveItems || liveItems.length === 0) return;
 
             const payload = {
-                requests: liveItems.map((item) => ({
-                    path: "/wc/store/v1/cart/add-item",
-                    method: "POST",
-                    cache: "no-store",
-                    body: {id: item.id, quantity: Number(item.qty || 1)},
-                    headers: {Nonce: nonce},
-                })),
+                requests: liveItems
+                    // only items without an existing Woo line item key
+                    .filter((item) => !item.key)
+                    .map((item) => ({
+                        path: "/wc/store/v1/cart/add-item",
+                        method: "POST",
+                        cache: "no-store",
+                        body: {
+                            id: item.id,
+                            quantity: Number(item.qty || 1),
+                        },
+                        headers: { Nonce: nonce },
+                    })),
             };
 
             const res = await wooHttpClient.post("/batch", payload);
