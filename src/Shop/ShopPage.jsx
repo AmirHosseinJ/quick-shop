@@ -17,7 +17,7 @@ const CART_ITEMS_V1_KEY = "cart_items_v1";
 
 export default function ShopPage() {
     const [categories, setCategories] = useState([]);
-    const [brands, setBrands] = useState([]);
+    const [brandsByCategory, setBrandsByCategory] = useState({}); // { cat: [] }
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [selectedBrand, setSelectedBrand] = useState(null);
     const [products, setProducts] = useState([]);
@@ -105,7 +105,7 @@ export default function ShopPage() {
                     return [...new Map(merged.map((p) => [p.id, p])).values()]; // dedupe by id
                 });
 
-                // add brands
+                // add brands for this category only
                 const productBrands = [
                     ...new Set(
                         items.flatMap((p) =>
@@ -113,7 +113,7 @@ export default function ShopPage() {
                         )
                     ),
                 ];
-                setBrands((prev) => [...new Set([...prev, ...productBrands])]);
+                setBrandsByCategory((prev) => ({ ...prev, [cat]: productBrands }));
             } catch (e) {
                 console.error(`Failed to fetch products for ${cat}`, e);
                 setProductsByCategory((prev) => ({ ...prev, [cat]: [] }));
@@ -128,8 +128,6 @@ export default function ShopPage() {
 
         categories.forEach((cat) => fetchByCat(cat));
     }, [categories, reHttpClient]);
-
-
 
 
     // Map cart items → v1 format *after* we have items
@@ -160,6 +158,12 @@ export default function ShopPage() {
         hydrate(cartV1);
         console.log("Hydrated cart from server:", cartV1);
     }, [cartItems]);
+
+    useEffect(() => {
+        // whenever category changes, reset brand filter
+        setSelectedBrand(null);
+    }, [selectedCategory]);
+
 
     // UI helpers
     const toggleCategory = (cat) =>
@@ -255,6 +259,11 @@ export default function ShopPage() {
         ? (productsByCategory[selectedCategory] || [])
         : products; // "All" = merged products
 
+    const visibleBrands = selectedCategory
+        ? (brandsByCategory[selectedCategory] || [])
+        : Object.values(brandsByCategory).flat(); // if "All" mode, show merged
+
+
 
     return (
         <>
@@ -321,17 +330,30 @@ export default function ShopPage() {
                     <div className="col-lg-2 mb-4">
                         <div className="list-group sticky-top">
                             <div className="list-group-item active mt-5">برندها</div>
-                            {brands.map((brand) => (
+                            {/* "All" option */}
+                            <button
+                                key="all"
+                                className={`list-group-item list-group-item-action ${
+                                    selectedBrand === null ? "active" : ""
+                                }`}
+                                onClick={() => setSelectedBrand(null)}  // clear brand filter
+                            >
+                                همه
+                            </button>
+
+                            {/* Normal brands */}
+                            {visibleBrands.map((brand) => (
                                 <button
                                     key={brand}
                                     className={`list-group-item list-group-item-action ${
                                         selectedBrand === brand ? "active" : ""
                                     }`}
-                                    onClick={() => toggleBrand(brand)}
+                                    onClick={() => setSelectedBrand(brand)}
                                 >
                                     {brand}
                                 </button>
                             ))}
+
                         </div>
                     </div>
                 </div>
