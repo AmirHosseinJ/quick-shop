@@ -11,7 +11,7 @@ export default function CartOffcanvas({formatIRR, onRemoveRemoteItem, onCheckout
     const CART_TOKEN_KEY = "wc_cart_token";
     const NONCE_KEY = "wc_nonce";
 
-    const WBaseUrl = "https://localhost/medline/wp-json/wc/store/v1";
+    const WBaseUrl = "https://localhost/medline2/wp-json/wc/store/v1";
     const httpClient = new HttpClient(WBaseUrl);
     const nonce = localStorage.getItem(NONCE_KEY);
     // const cart_token = localStorage.getItem(CART_TOKEN_KEY);

@@ -4,7 +4,7 @@ class HttpClient {
     constructor(baseURL) {
         // Allow passing baseURL for different endpoints
         this.client = axios.create({
-            baseURL: baseURL || 'https://localhost/medline/wp-json/wooheadless/v1', // Default to RBaseUrl if no baseURL is passed
+            baseURL: baseURL || 'https://localhost/medline2/wp-json/wooheadless/v1', // Default to RBaseUrl if no baseURL is passed
             headers: {
                 'Content-Type': 'application/json',
                 // Add auth token dynamically in request interceptor
