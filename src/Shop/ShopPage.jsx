@@ -170,11 +170,18 @@ export default function ShopPage() {
         setSelectedCategory((curr) => (curr === cat ? null : cat));
     const toggleBrand = (b) => setSelectedBrand((curr) => (curr === b ? null : b));
 
-    const formatIRR = (n) => new Intl.NumberFormat("fa-IR", {
-        style: "currency",
-        currency: "IRR",
-        maximumFractionDigits: 0,
-    }).format(n).replace("ریال", "تومان");
+    function formatIRR(n) {
+        // Format the number as Iranian currency (IRR) and replace "ریال" with "تومان"
+        const formattedNumber = new Intl.NumberFormat("fa-IR", {
+            style: "currency",
+            currency: "IRR",
+            maximumFractionDigits: 0,
+        }).format(n).replace("ریال", "");  // Remove 'ریال' and leave just the number
+
+        // Add "تومان" before the number and return the result
+        return "تومان " + formattedNumber;
+    }
+
 
 
     // Remove a single line from Woo if it has a key
@@ -218,8 +225,8 @@ export default function ShopPage() {
 
             if (allOk) {
                 const target = cart_token
-                    ? `https://localhost/medline/checkout?cart_token=${encodeURIComponent(cart_token)}`
-                    : "https://localhost/medline/checkout";
+                    ? `https://localhost/medline2/checkout?cart_token=${encodeURIComponent(cart_token)}`
+                    : "https://localhost/medline2/checkout";
                 window.location.href = target;
             } else {
                 console.error("Some items failed to add:", responses);
