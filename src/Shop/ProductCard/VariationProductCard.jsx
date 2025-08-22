@@ -2,20 +2,17 @@ import React, {useMemo, useState, useEffect, useRef} from "react";
 import debounce from "lodash.debounce";
 import {useCart} from "../CartContext/CartContext";
 
-// Optional: map attribute slugs to user-friendly labels
-const ATTR_LABELS = {
-    pa_size: "سایز",
-    pa_hajm: "حجم",
-};
-
 // Safe decode for percent-encoded values
 function safeDecode(v) {
     try {
-        return decodeURIComponent(String(v || ""));
+        // Remove 'pa_' prefix and decode
+        const decodedValue = decodeURIComponent(String(v || ""));
+        return decodedValue.replace(/^pa_/, ""); // Remove the 'pa_' prefix after decoding
     } catch {
         return String(v || "");
     }
 }
+
 
 function buildAttributeOptions(variations) {
     const map = {};
@@ -95,13 +92,9 @@ export default function VariationProductCard({product, formatIRR, onUpdateQty}) 
 
     const nameWithAttrs = useMemo(() => {
         const base = product?.name || "";
-        const pretty = selectedVariation
-            ? Object.entries(selectedVariation?.attributes || {})
-                .map(([k, v]) => `${(ATTR_LABELS[k] || k)}: ${safeDecode(v)}`)
-                .join("، ")
-            : "";
-        return pretty ? `${base} — ${pretty}` : base;
-    }, [product?.name, selectedVariation]);
+        return base; // Just return the product name without adding attributes
+    }, [product?.name]);
+
 
     const qtyInCart = useMemo(() => {
         const found = items.find((x) => x.id === cartId);
@@ -128,6 +121,7 @@ export default function VariationProductCard({product, formatIRR, onUpdateQty}) 
                 price: selectedVariation?.price ?? product?.price,
                 meta: {
                     attributes: selectedVariation?.attributes || {},
+                    attr_name: selectedVariation?.attr_name || '',
                 },
                 quantity_limits: ql,
                 min_qty: Number.isFinite(ql?.minimum) ? ql.minimum : undefined,
@@ -224,7 +218,8 @@ export default function VariationProductCard({product, formatIRR, onUpdateQty}) 
                             {Object.entries(attrOptions).map(([attrKey, opts]) => (
                                 <div className="mb-2" key={attrKey}>
                                     <div className="small fw-bold mb-1">
-                                        {ATTR_LABELS[attrKey] || attrKey}
+                                        {/* Display the attribute name directly from the 'attr_name' */}
+                                        {selectedVariation?.attr_name || safeDecode(attrKey)} {/* If 'attr_name' exists, use it, else fall back to decoded key */}
                                     </div>
                                     <div className="d-flex flex-wrap gap-1 justify-content-center">
                                         {opts.map((opt) => {
@@ -234,9 +229,9 @@ export default function VariationProductCard({product, formatIRR, onUpdateQty}) 
                                                     type="button"
                                                     key={opt}
                                                     className={`btn btn-sm ${isActive ? "btn-primary" : "btn-outline-secondary"}`}
-                                                    onClick={() => setSelected((s) => ({...s, [attrKey]: opt}))}
+                                                    onClick={() => setSelected((s) => ({ ...s, [attrKey]: opt }))}
                                                 >
-                                                    {safeDecode(opt)}
+                                                    {safeDecode(opt)} {/* Decode the option value */}
                                                 </button>
                                             );
                                         })}
@@ -245,6 +240,7 @@ export default function VariationProductCard({product, formatIRR, onUpdateQty}) 
                             ))}
                         </div>
                     )}
+
 
                     <div className="mt-auto">
                         <div className="d-flex align-items-center justify-content-center mb-2">

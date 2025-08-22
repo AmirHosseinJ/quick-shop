@@ -100,14 +100,10 @@ export default function CartOffcanvas({formatIRR, onRemoveRemoteItem, onCheckout
                                     <div className="fw-semibold">{x.name}</div>
                                     <small className="text-muted">{x.brand}</small>
                                     <div className="mt-1">{formatIRR(x.price)}</div>
+
                                     {x.meta?.attributes && (
                                         <small className="text-muted d-block">
-                                            {Object.entries(x.meta.attributes)
-                                                .map(([k, v]) => `${({
-                                                    pa_size: "سایز",
-                                                    pa_hajm: "حجم"
-                                                }[k] || k)}: ${decodeURIComponent(v)}`)
-                                                .join("، ")}
+                                            {x.meta.attr_name}: {decodeURIComponent(x.meta.attributes[Object.keys(x.meta.attributes)[0]])}
                                         </small>
                                     )}
 
