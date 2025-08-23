@@ -179,7 +179,7 @@ export default function ShopPage() {
         }).format(n).replace("ریال", "");  // Remove 'ریال' and leave just the number
 
         // Add "تومان" before the number and return the result
-        return "تومان " + formattedNumber;
+        return  formattedNumber+ " تومان";
     }
 
 
@@ -295,6 +295,36 @@ export default function ShopPage() {
                 </div>
 
                 <div className="row">
+                    {/* Brands Sidebar */}
+                    <div className="col-lg-2 mb-4">
+                        <div className="list-group sticky-top">
+                            <div className="list-group-item active mt-5">برندها</div>
+                            {/* "All" option */}
+                            <button
+                                key="all"
+                                className={`list-group-item list-group-item-action ${
+                                    selectedBrand === null ? "active" : ""
+                                }`}
+                                onClick={() => setSelectedBrand(null)}  // clear brand filter
+                            >
+                                همه
+                            </button>
+
+                            {/* Normal brands */}
+                            {visibleBrands.map((brand) => (
+                                <button
+                                    key={brand}
+                                    className={`list-group-item list-group-item-action ${
+                                        selectedBrand === brand ? "active" : ""
+                                    }`}
+                                    onClick={() => setSelectedBrand(brand)}
+                                >
+                                    {brand}
+                                </button>
+                            ))}
+
+                        </div>
+                    </div>
                     {/* Products */}
                     <div className="col-lg-10">
                         <div className="row g-3">
@@ -330,37 +360,6 @@ export default function ShopPage() {
                                             />
                                         )
                                     )}
-                        </div>
-                    </div>
-
-                    {/* Brands Sidebar */}
-                    <div className="col-lg-2 mb-4">
-                        <div className="list-group sticky-top">
-                            <div className="list-group-item active mt-5">برندها</div>
-                            {/* "All" option */}
-                            <button
-                                key="all"
-                                className={`list-group-item list-group-item-action ${
-                                    selectedBrand === null ? "active" : ""
-                                }`}
-                                onClick={() => setSelectedBrand(null)}  // clear brand filter
-                            >
-                                همه
-                            </button>
-
-                            {/* Normal brands */}
-                            {visibleBrands.map((brand) => (
-                                <button
-                                    key={brand}
-                                    className={`list-group-item list-group-item-action ${
-                                        selectedBrand === brand ? "active" : ""
-                                    }`}
-                                    onClick={() => setSelectedBrand(brand)}
-                                >
-                                    {brand}
-                                </button>
-                            ))}
-
                         </div>
                     </div>
                 </div>
