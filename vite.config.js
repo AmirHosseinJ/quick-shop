@@ -12,4 +12,7 @@ export default defineConfig({
         host: 'localhost',
         port: 5174,
     },
+    css: {
+        postcss: './postcss.config.js', // Ensure PostCSS config is loaded correctly
+    },
 })

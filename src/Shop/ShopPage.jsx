@@ -30,7 +30,11 @@ export default function ShopPage() {
     const {removeItem, setQty, hydrate} = useCart(); // to remove locally after remote ops
 
 
-    const WBaseUrl = "https://localhost/medline2/wp-json/wc/store/v1";
+    // const WBaseUrl = "https://localhost/medline2/wp-json/wc/store/v1";
+    // const cartUrl ="https://localhost/medline2/checkout"
+    const WBaseUrl = `${window.location.protocol}//${window.location.hostname}/wp-json/wc/store/v1`;
+    const cartUrl = `${window.location.protocol}//${window.location.hostname}/checkout`;
+
     const nonce = localStorage.getItem(NONCE_KEY);
     const cart_token = localStorage.getItem(CART_TOKEN_KEY);
 
@@ -225,8 +229,8 @@ export default function ShopPage() {
 
             if (allOk) {
                 const target = cart_token
-                    ? `https://localhost/medline2/checkout?cart_token=${encodeURIComponent(cart_token)}`
-                    : "https://localhost/medline2/checkout";
+                    ? `${cartUrl}?cart_token=${encodeURIComponent(cart_token)}`
+                    : cartUrl;
                 window.location.href = target;
             } else {
                 console.error("Some items failed to add:", responses);
@@ -284,7 +288,7 @@ export default function ShopPage() {
                             <button
                                 key={cat}
                                 className={`btn ${
-                                    selectedCategory === cat ? "btn-primary" : "btn-outline-primary"
+                                    selectedCategory === cat ? "btn-primary active" : "btn-outline-primary"
                                 }`}
                                 onClick={() => toggleCategory(cat)}
                             >
