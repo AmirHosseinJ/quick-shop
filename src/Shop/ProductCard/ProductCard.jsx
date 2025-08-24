@@ -135,6 +135,7 @@ export default function ProductCard({
                     alt={name || "product"} // Image alt text
                     effect="blur" // Optional: Adds blur effect while image is loading
                     placeholderSrc="placeholder.jpg" // Optional: Placeholder image
+                    className={"card-img-top"}
                 />
                 <div className="card-body d-flex flex-column">
                     <h6 className="card-title">{name}</h6>

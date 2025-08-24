@@ -1,6 +1,7 @@
 import React, {useMemo, useState, useEffect, useRef} from "react";
 import debounce from "lodash.debounce";
 import {useCart} from "../CartContext/CartContext";
+import {LazyLoadImage} from "react-lazy-load-image-component";
 
 // Safe decode for percent-encoded values
 function safeDecode(v) {
@@ -204,7 +205,14 @@ export default function VariationProductCard({product, formatIRR, onUpdateQty}) 
                     </span>
                 )}
 
-                <img src={image} className="card-img-top" alt={product?.name || "product"}/>
+                {/*<img src={image} className="card-img-top" alt={product?.name || "product"}/>*/}
+                <LazyLoadImage
+                    src={image} // Image source
+                    alt={product?.name || "product"} // Image alt text
+                    effect="blur" // Optional: Adds blur effect while image is loading
+                    placeholderSrc="placeholder.jpg" // Optional: Placeholder image
+                    className={"card-img-top"}
+                />
 
                 <div className="card-body d-flex flex-column">
                     <h6 className="card-title">{nameWithAttrs}</h6>
