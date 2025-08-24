@@ -72,11 +72,11 @@ export default function ShopPage() {
 
                 if (cartToken) {
                     localStorage.setItem(CART_TOKEN_KEY, cartToken);
-                    console.log("Saved cart token:", cartToken);
+                    // console.log("Saved cart token:", cartToken);
                 }
                 if (nonce) {
                     localStorage.setItem(NONCE_KEY, nonce);
-                    console.log("Saved nonce:", nonce);
+                    // console.log("Saved nonce:", nonce);
                 }
 
                 const items = response.data?.items || [];
@@ -228,8 +228,9 @@ export default function ShopPage() {
 
             if (allOk) {
                 const target = cart_token
-                    ? `/checkout?cart_token=${encodeURIComponent(cart_token)}`
-                    : '/checkout';
+                    ? `${base}/checkout?cart_token=${encodeURIComponent(cart_token)}`
+                    : `${base}/checkout`;
+                // console.log('target', target);
                 window.location.href = target;
             } else {
                 console.error("Some items failed to add:", responses);
