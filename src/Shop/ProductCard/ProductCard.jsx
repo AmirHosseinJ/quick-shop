@@ -1,6 +1,7 @@
 import React, {useMemo, useRef, useEffect} from "react";
 import debounce from "lodash.debounce";
 import {useCart} from "../CartContext/CartContext";
+import {LazyLoadImage} from "react-lazy-load-image-component";
 
 export default function ProductCard({
                                         id,
@@ -128,7 +129,13 @@ export default function ProductCard({
                     </span>
                 )}
 
-                <img src={displayImg} className="card-img-top" alt={name || "product"}/>
+                {/*<img src={displayImg} className="card-img-top" alt={name || "product"}/>*/}
+                <LazyLoadImage
+                    src={displayImg} // Image source
+                    alt={name || "product"} // Image alt text
+                    effect="blur" // Optional: Adds blur effect while image is loading
+                    placeholderSrc="placeholder.jpg" // Optional: Placeholder image
+                />
                 <div className="card-body d-flex flex-column">
                     <h6 className="card-title">{name}</h6>
                     <small className="text-muted">{brand}</small>

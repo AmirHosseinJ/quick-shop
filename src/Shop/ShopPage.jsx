@@ -29,17 +29,16 @@ export default function ShopPage() {
 
     const {removeItem, setQty, hydrate} = useCart(); // to remove locally after remote ops
 
+    const base = import.meta.env.VITE_API_BASE_URL;
+    const WBaseUrl = `${base}/wp-json/wc/store/v1`;
+    const RBaseUrl = `${base}/wp-json/wooheadless/v1`;
 
-    // const WBaseUrl = "https://localhost/medline2/wp-json/wc/store/v1";
-    // const cartUrl ="https://localhost/medline2/checkout"
-    const WBaseUrl = `${window.location.protocol}//${window.location.hostname}/wp-json/wc/store/v1`;
-    const cartUrl = `${window.location.protocol}//${window.location.hostname}/checkout`;
 
     const nonce = localStorage.getItem(NONCE_KEY);
     const cart_token = localStorage.getItem(CART_TOKEN_KEY);
 
     // Memoize clients to avoid re-instantiation
-    const reHttpClient = useMemo(() => new HttpClient(), []);
+    const reHttpClient = useMemo(() => new HttpClient(RBaseUrl), [RBaseUrl]);
     const wooHttpClient = useMemo(() => new HttpClient(WBaseUrl), [WBaseUrl]);
 
     // Fetch categories separately
@@ -229,8 +228,8 @@ export default function ShopPage() {
 
             if (allOk) {
                 const target = cart_token
-                    ? `${cartUrl}?cart_token=${encodeURIComponent(cart_token)}`
-                    : cartUrl;
+                    ? `/checkout?cart_token=${encodeURIComponent(cart_token)}`
+                    : '/checkout';
                 window.location.href = target;
             } else {
                 console.error("Some items failed to add:", responses);

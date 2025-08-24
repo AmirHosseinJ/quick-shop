@@ -2,9 +2,10 @@ import axios from 'axios';
 
 class HttpClient {
     constructor(baseURL) {
+        // const base = import.meta.env.VITE_API_BASE_URL;
         // Allow passing baseURL for different endpoints
         this.client = axios.create({
-            baseURL: baseURL || 'https://localhost/medline2/wp-json/wooheadless/v1', // Default to RBaseUrl if no baseURL is passed
+            baseURL: baseURL ,
             headers: {
                 'Content-Type': 'application/json',
                 // Add auth token dynamically in request interceptor
