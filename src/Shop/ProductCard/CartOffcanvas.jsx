@@ -84,9 +84,16 @@ export default function CartOffcanvas({formatIRR, onRemoveRemoteItem, onCheckout
             id="cartOffcanvas"
             aria-labelledby="cartOffcanvasLabel"
         >
-            <div className="offcanvas-header">
-                <h5 className="offcanvas-title" id="cartOffcanvasLabel">سبد خرید</h5>
-                <button type="button" className="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            <div className="offcanvas-header mt-2">
+                <div className=" d-flex px-2 w-100 justify-content-between">
+                    <div className="">
+                        <h5 className="offcanvas-title" id="cartOffcanvasLabel">سبد خرید</h5>
+                    </div>
+                    <div className="">
+                        <button type="button" className="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                    </div>
+                </div>
+
             </div>
 
             <div className="offcanvas-body d-flex flex-column">
@@ -156,23 +163,31 @@ export default function CartOffcanvas({formatIRR, onRemoveRemoteItem, onCheckout
                         <div className="fw-bold">مجموع</div>
                         <div className="fw-bold text-success">{formatIRR(total)}</div>
                     </div>
-                    <div className="d-flex gap-2">
-                        <button
-                            className="btn btn-outline-danger w-25"
-                            onClick={handleClearAll}
-                            disabled={!items.length || clearing}
-                        >
-                            پاک کردن
-                        </button>
-                        <button
-                            className="btn btn-success w-75"
-                            disabled={!items.length}
-                            data-bs-dismiss="offcanvas"  // This will close the offcanvas when clicked
-                        >
-                            ادامه خرید
-                        </button>
 
-                    </div>
+                        <div className="row  justify-content-between">
+                            <div className="col-5 col-sm-4">
+                                <button
+                                    className="btn btn-outline-danger w-100"
+                                    onClick={handleClearAll}
+                                    disabled={!items.length || clearing}
+                                >
+                                    پاک کردن
+                                </button>
+                            </div>
+                            <div className="col-7 col-sm-8">
+                                <button
+                                    className="btn btn-success w-100"
+                                    disabled={!items.length}
+                                    data-bs-dismiss="offcanvas"  // This will close the offcanvas when clicked
+                                >
+                                    ادامه خرید
+                                </button>
+                            </div>
+                        </div>
+
+
+
+
                     <div className="d-flex mt-2">
                         <button className="btn btn-primary w-100" disabled={!items.length} onClick={handleCheckout}>
                             تسویه حساب

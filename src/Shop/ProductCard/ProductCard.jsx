@@ -2,6 +2,7 @@ import React, {useMemo, useRef, useEffect} from "react";
 import debounce from "lodash.debounce";
 import {useCart} from "../CartContext/CartContext";
 import {LazyLoadImage} from "react-lazy-load-image-component";
+// import img from "../../assets/img.png";
 
 export default function ProductCard({
                                         id,
@@ -134,8 +135,8 @@ export default function ProductCard({
                             src={displayImg} // Image source
                             alt={name || "product"} // Image alt text
                             effect="blur" // Optional: Adds blur effect while image is loading
-                            placeholderSrc="placeholder.jpg" // Optional: Placeholder image
-                            className={"card-img-top img-fluid rounded"}
+                            // placeholderSrc={img} // Optional: Placeholder image
+                            className={"card-img-top img-fluid rounded object-fit-scale"}
                         />
                     </div>
                     <div className=" col-6 col-sm-12">
@@ -170,7 +171,7 @@ export default function ProductCard({
                                             <input
                                                 type="number"
                                                 className="form-control form-control-sm qty-input text-center"
-                                                style={{width: 64}}
+                                                id={"qty-input-"+id}
                                                 min={isSoldIndividually ? 1 : min}
                                                 step={isSoldIndividually ? 1 : step}
                                                 max={isSoldIndividually ? 1 : (Number.isFinite(max) ? max : undefined)}

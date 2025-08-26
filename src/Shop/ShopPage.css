@@ -48,6 +48,10 @@
         max-width: 128px;
         height: auto;
     }
+    .qty-input {
+        appearance: textfield;
+        width: 20px;
+    }
 }
 
 @media (max-width: 767.98px) {
@@ -55,6 +59,10 @@
     /*    max-width: 256px;*/
     /*    height: auto;*/
     /*}*/
+    .qty-input {
+        appearance: textfield;
+        width: 32px;
+    }
 }
 
 @media (max-width: 991.98px) {
@@ -78,8 +86,17 @@
     position: sticky;
     top: 0;
     padding-top: 112px;
+    z-index: 1;
 }
 
 .sticky-wrapper .list-group.sticky-top {
     transition: padding-top 0.3s ease;
+    max-height: 90vh;
+    z-index: 0;
+    overflow-y: scroll;
+    scrollbar-width: none;
+}
+
+.offcanvas-title{
+    font-family: 'IRANSansWeb-FaNum-Medium', sans-serif !important;
 }

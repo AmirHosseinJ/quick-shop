@@ -2,6 +2,7 @@ import React, {useMemo, useState, useEffect, useRef} from "react";
 import debounce from "lodash.debounce";
 import {useCart} from "../CartContext/CartContext";
 import {LazyLoadImage} from "react-lazy-load-image-component";
+// import img from "../../assets/img.png";
 
 // Safe decode for percent-encoded values
 function safeDecode(v) {
@@ -210,8 +211,8 @@ export default function VariationProductCard({product, formatIRR, onUpdateQty}) 
                             src={image} // Image source
                             alt={product?.name || "product"} // Image alt text
                             effect="blur" // Optional: Adds blur effect while image is loading
-                            placeholderSrc="placeholder.jpg" // Optional: Placeholder image
-                            className={"card-img-top"}
+                            // placeholderSrc={img} // Optional: Placeholder image
+                            className={"card-img-top img-fluid rounded object-fit-scale"}
                         />
                     </div>
                     <div className="col-6 col-sm-12">
@@ -283,7 +284,7 @@ export default function VariationProductCard({product, formatIRR, onUpdateQty}) 
                                             <input
                                                 type="number"
                                                 className="form-control form-control-sm qty-input text-center"
-                                                style={{width: 64}}
+                                                id={"qty-input-"+cartId}
                                                 min={isSoldIndividually ? 1 : min}
                                                 step={isSoldIndividually ? 1 : step}
                                                 max={isSoldIndividually ? 1 : (Number.isFinite(max) ? max : undefined)}
