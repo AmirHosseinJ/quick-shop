@@ -98,11 +98,11 @@ export default function ShopPage() {
             setLoadingCats((prev) => new Set(prev).add(cat));
             try {
                 const res = await reHttpClient.get("/products", {
-                    params: { per_page: 0, category: cat }, // 👈 change param if API differs
+                    params: {per_page: 0, category: cat}, // 👈 change param if API differs
                 });
                 const items = res.data?.data || [];
 
-                setProductsByCategory((prev) => ({ ...prev, [cat]: items }));
+                setProductsByCategory((prev) => ({...prev, [cat]: items}));
                 setProducts((prev) => {
                     const merged = [...prev, ...items];
                     return [...new Map(merged.map((p) => [p.id, p])).values()]; // dedupe by id
@@ -116,10 +116,10 @@ export default function ShopPage() {
                         )
                     ),
                 ];
-                setBrandsByCategory((prev) => ({ ...prev, [cat]: productBrands }));
+                setBrandsByCategory((prev) => ({...prev, [cat]: productBrands}));
             } catch (e) {
                 console.error(`Failed to fetch products for ${cat}`, e);
-                setProductsByCategory((prev) => ({ ...prev, [cat]: [] }));
+                setProductsByCategory((prev) => ({...prev, [cat]: []}));
             } finally {
                 setLoadingCats((prev) => {
                     const copy = new Set(prev);
@@ -182,9 +182,8 @@ export default function ShopPage() {
         }).format(n).replace("ریال", "");  // Remove 'ریال' and leave just the number
 
         // Add "تومان" before the number and return the result
-        return  formattedNumber+ " تومان";
+        return formattedNumber + " تومان";
     }
-
 
 
     // Remove a single line from Woo if it has a key
@@ -218,7 +217,7 @@ export default function ShopPage() {
                             id: item.id,
                             quantity: Number(item.qty || 1),
                         },
-                        headers: { Nonce: nonce },
+                        headers: {Nonce: nonce},
                     })),
             };
 
@@ -275,7 +274,6 @@ export default function ShopPage() {
         : Object.values(brandsByCategory).flat(); // if "All" mode, show merged
 
 
-
     return (
         <>
             <div className="container-fluid py-4">
@@ -283,11 +281,11 @@ export default function ShopPage() {
                     <div>دسته بندی ها</div>
 
                     {/* Categories */}
-                    <div className="d-flex gap-2 overflow-auto mb-4 justify-content-center pt-2">
+                    <div className="d-flex gap-2 overflow-x-auto mb-4 justify-content-sm-center justify-content-start pt-2 ">
                         {categories.map((cat) => (
                             <button
                                 key={cat}
-                                className={`btn ${
+                                className={`btn text-nowrap ${
                                     selectedCategory === cat ? "btn-primary active" : "btn-outline-primary"
                                 }`}
                                 onClick={() => toggleCategory(cat)}
@@ -300,9 +298,9 @@ export default function ShopPage() {
 
                 <div className="row">
                     {/* Brands Sidebar */}
-                    <div className="col-lg-2 mb-4">
+                    <div className="col-4 col-sm-2 px-1 px-sm-2 mb-4 sticky-wrapper">
                         <div className="list-group sticky-top">
-                            <div className="list-group-item active mt-5">برندها</div>
+                            <div className="list-group-item active">برندها</div>
                             {/* "All" option */}
                             <button
                                 key="all"
@@ -330,7 +328,7 @@ export default function ShopPage() {
                         </div>
                     </div>
                     {/* Products */}
-                    <div className="col-lg-10">
+                    <div className="col-8 col-sm-10 px-1 px-sm-2 fs-6">
                         <div className="row g-3">
                             {selectedCategory && loadingCats.has(selectedCategory)
                                 ? Array.from({length: 8}).map((_, i) => <ProductCardPlaceholder key={i}/>)

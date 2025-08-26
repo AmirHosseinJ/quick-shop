@@ -15,9 +15,10 @@
 .product-card {
     transition: transform 120ms ease, box-shadow 120ms ease;
 }
+
 .product-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 0.5rem 1rem rgba(0,0,0,.15);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, .15);
 }
 
 /* Small nicer number input appearance */
@@ -26,15 +27,59 @@
     -webkit-appearance: none;
     margin: 0;
 }
+
 .qty-input {
     appearance: textfield;
 }
+
 .card-qty-badge {
     z-index: 2;
     margin: 8px 0 0 8px; /* nudge from top-left corner */
 }
 
 #categories-menu {
-    background-color: rgba(255, 255, 255, 0.80);
+    background-color: white;
     padding-bottom: 10px;
+}
+
+
+@media (max-width: 575.98px) {
+    .card-img-top {
+        max-width: 128px;
+        height: auto;
+    }
+}
+
+@media (max-width: 767.98px) {
+    /*.card-img-top {*/
+    /*    max-width: 256px;*/
+    /*    height: auto;*/
+    /*}*/
+}
+
+@media (max-width: 991.98px) {
+
+}
+
+@media (max-width: 1199.98px) {
+
+}
+
+
+@media (min-width: 1200px) {
+
+}
+
+.sticky-wrapper {
+    position: relative;
+}
+
+.sticky-top {
+    position: sticky;
+    top: 0;
+    padding-top: 112px;
+}
+
+.sticky-wrapper .list-group.sticky-top {
+    transition: padding-top 0.3s ease;
 }

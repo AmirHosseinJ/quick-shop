@@ -190,7 +190,7 @@ export default function VariationProductCard({product, formatIRR, onUpdateQty}) 
         const clamped = Math.min(next, Number.isFinite(max) ? max : next);
         if (qtyInCart === 0) onAdd();
         else setQty(cartId, clamped);
-        debouncedUpdateQty(currentItem || { id: cartId }, clamped);
+        debouncedUpdateQty(currentItem || {id: cartId}, clamped);
     };
 
     const stockStatus = selectedVariation?.stock_status || product?.stock_status;
@@ -204,117 +204,121 @@ export default function VariationProductCard({product, formatIRR, onUpdateQty}) 
                         {qtyInCart}
                     </span>
                 )}
+                <div className="row">
+                    <div className="col-6 col-sm-12">
+                        <LazyLoadImage
+                            src={image} // Image source
+                            alt={product?.name || "product"} // Image alt text
+                            effect="blur" // Optional: Adds blur effect while image is loading
+                            placeholderSrc="placeholder.jpg" // Optional: Placeholder image
+                            className={"card-img-top"}
+                        />
+                    </div>
+                    <div className="col-6 col-sm-12">
+                        <div className="card-body d-flex flex-column">
+                            <h6 className="card-title">{nameWithAttrs}</h6>
+                            <small className="text-muted">
+                                {(product?.brands || []).map((b) => b.name).join("، ")}
+                            </small>
 
-                {/*<img src={image} className="card-img-top" alt={product?.name || "product"}/>*/}
-                <LazyLoadImage
-                    src={image} // Image source
-                    alt={product?.name || "product"} // Image alt text
-                    effect="blur" // Optional: Adds blur effect while image is loading
-                    placeholderSrc="placeholder.jpg" // Optional: Placeholder image
-                    className={"card-img-top"}
-                />
-
-                <div className="card-body d-flex flex-column">
-                    <h6 className="card-title">{nameWithAttrs}</h6>
-                    <small className="text-muted">
-                        {(product?.brands || []).map((b) => b.name).join("، ")}
-                    </small>
-
-                    {/* Attribute pickers */}
-                    {Object.keys(attrOptions).length > 0 && (
-                        <div className="my-2">
-                            {Object.entries(attrOptions).map(([attrKey, opts]) => (
-                                <div className="mb-2" key={attrKey}>
-                                    <div className="small fw-bold mb-1">
-                                        {/* Display the attribute name directly from the 'attr_name' */}
-                                        {selectedVariation?.attr_name || safeDecode(attrKey)} {/* If 'attr_name' exists, use it, else fall back to decoded key */}
-                                    </div>
-                                    <div className="d-flex flex-wrap gap-1 justify-content-center">
-                                        {opts.map((opt) => {
-                                            const isActive = String(selected[attrKey] || "") === String(opt);
-                                            return (
-                                                <button
-                                                    type="button"
-                                                    key={opt}
-                                                    className={`btn btn-sm ${isActive ? "btn-primary" : "btn-outline-secondary"}`}
-                                                    onClick={() => setSelected((s) => ({ ...s, [attrKey]: opt }))}
-                                                >
-                                                    {safeDecode(opt)} {/* Decode the option value */}
-                                                </button>
-                                            );
-                                        })}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-
-
-                    <div className="mt-auto">
-                        <div className="d-flex align-items-center justify-content-center mb-2">
-                            <div className="fw-bold text-success">
-                                {formatIRR ? formatIRR(selectedVariation?.price ?? product?.price) : (selectedVariation?.price ?? product?.price)}
-                            </div>
-
-                            {qtyInCart === 0 && (
-                                <button
-                                    className="btn btn-sm btn-primary mx-3"
-                                    onClick={onAdd}
-                                    disabled={!selectedVariation || (isSoldIndividually && qtyInCart >= 1)}
-                                >
-                                    +
-                                </button>
-                            )}
-                        </div>
-
-                        <div className="d-flex align-items-center justify-content-center mb-2">
-                            {qtyInCart > 0 && (
-                                <div className="btn-group btn-group-sm" role="group" aria-label="Quantity">
-                                    <button
-                                        className="btn btn-outline-secondary"
-                                        onClick={onMinus}
-                                        disabled={isSoldIndividually ? qtyInCart <= 0 : qtyInCart <= min}
-                                    >
-                                        −
-                                    </button>
-
-                                    {/* Editable input like CartOffcanvas */}
-                                    <input
-                                        type="number"
-                                        className="form-control form-control-sm qty-input text-center"
-                                        style={{width: 64}}
-                                        min={isSoldIndividually ? 1 : min}
-                                        step={isSoldIndividually ? 1 : step}
-                                        max={isSoldIndividually ? 1 : (Number.isFinite(max) ? max : undefined)}
-                                        value={qtyInCart}
-                                        onChange={(e) => handleChange(e.target.value)}
-                                        disabled={!selectedVariation || isSoldIndividually}
-                                    />
-
-                                    <button
-                                        className="btn btn-outline-secondary"
-                                        onClick={onPlus}
-                                        disabled={
-                                            !selectedVariation ||
-                                            (isSoldIndividually
-                                                ? qtyInCart >= 1
-                                                : (Number.isFinite(max) && qtyInCart >= max))
-                                        }
-                                    >
-                                        +
-                                    </button>
+                            {/* Attribute pickers */}
+                            {Object.keys(attrOptions).length > 0 && (
+                                <div className="my-2">
+                                    {Object.entries(attrOptions).map(([attrKey, opts]) => (
+                                        <div className="mb-2" key={attrKey}>
+                                            <div className="small fw-bold mb-1">
+                                                {/* Display the attribute name directly from the 'attr_name' */}
+                                                {selectedVariation?.attr_name || safeDecode(attrKey)} {/* If 'attr_name' exists, use it, else fall back to decoded key */}
+                                            </div>
+                                            <div className="d-flex flex-wrap gap-1 justify-content-center">
+                                                {opts.map((opt) => {
+                                                    const isActive = String(selected[attrKey] || "") === String(opt);
+                                                    return (
+                                                        <button
+                                                            type="button"
+                                                            key={opt}
+                                                            className={`btn btn-sm ${isActive ? "btn-primary" : "btn-outline-secondary"}`}
+                                                            onClick={() => setSelected((s) => ({...s, [attrKey]: opt}))}
+                                                        >
+                                                            {safeDecode(opt)} {/* Decode the option value */}
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
                             )}
-                        </div>
 
-                        {/* Stock hint */}
-                        {selectedVariation && (
-                            <div className="text-center">
-                                {stockStatus === "instock" && <small className="text-success">موجود</small>}
-                                {stockStatus === "onbackorder" && <small className="text-warning">پیش‌سفارش</small>}
-                                {stockStatus === "outofstock" && <small className="text-danger">ناموجود</small>}
+
+                            <div className="mt-auto">
+                                <div className="d-flex align-items-center justify-content-center mb-2">
+                                    <div className="fw-bold text-success">
+                                        {formatIRR ? formatIRR(selectedVariation?.price ?? product?.price) : (selectedVariation?.price ?? product?.price)}
+                                    </div>
+
+                                    {qtyInCart === 0 && (
+                                        <button
+                                            className="btn btn-sm btn-primary mx-3"
+                                            onClick={onAdd}
+                                            disabled={!selectedVariation || (isSoldIndividually && qtyInCart >= 1)}
+                                        >
+                                            +
+                                        </button>
+                                    )}
+                                </div>
+
+                                <div className="d-flex align-items-center justify-content-center mb-2">
+                                    {qtyInCart > 0 && (
+                                        <div className="btn-group btn-group-sm" role="group" aria-label="Quantity">
+                                            <button
+                                                className="btn btn-outline-secondary"
+                                                onClick={onMinus}
+                                                disabled={isSoldIndividually ? qtyInCart <= 0 : qtyInCart <= min}
+                                            >
+                                                −
+                                            </button>
+
+                                            {/* Editable input like CartOffcanvas */}
+                                            <input
+                                                type="number"
+                                                className="form-control form-control-sm qty-input text-center"
+                                                style={{width: 64}}
+                                                min={isSoldIndividually ? 1 : min}
+                                                step={isSoldIndividually ? 1 : step}
+                                                max={isSoldIndividually ? 1 : (Number.isFinite(max) ? max : undefined)}
+                                                value={qtyInCart}
+                                                onChange={(e) => handleChange(e.target.value)}
+                                                disabled={!selectedVariation || isSoldIndividually}
+                                            />
+
+                                            <button
+                                                className="btn btn-outline-secondary"
+                                                onClick={onPlus}
+                                                disabled={
+                                                    !selectedVariation ||
+                                                    (isSoldIndividually
+                                                        ? qtyInCart >= 1
+                                                        : (Number.isFinite(max) && qtyInCart >= max))
+                                                }
+                                            >
+                                                +
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Stock hint */}
+                                {selectedVariation && (
+                                    <div className="text-center">
+                                        {stockStatus === "instock" && <small className="text-success">موجود</small>}
+                                        {stockStatus === "onbackorder" &&
+                                            <small className="text-warning">پیش‌سفارش</small>}
+                                        {stockStatus === "outofstock" && <small className="text-danger">ناموجود</small>}
+                                    </div>
+                                )}
                             </div>
-                        )}
+                        </div>
                     </div>
                 </div>
             </div>
