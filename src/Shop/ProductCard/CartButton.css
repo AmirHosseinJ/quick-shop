@@ -1,0 +1,47 @@
+.custom-btn {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 54px;
+    height: 54px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    border: 1px solid #e5e5e5;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    margin-bottom: 2.5rem;
+}
+
+.custom-icon-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.custom-icon-cart-check {
+    width: 24px; /* Adjust size of the image */
+    height: 24px; /* Adjust size of the image */
+    color-interpolation: var(--primary-color);
+    transform: rotate(-45deg);
+}
+
+
+.custom-btn:hover {
+    background-color: #f8f8f8;
+    border-color: #dcdcdc;
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+}
+
+.square {
+    width: 54px; /* Set the width */
+    height: 54px; /* Set the height (same as width for a square) */
+    background-color: #f0f0f0; /* Background color */
+    border-radius: 25%; /* Rounded corners */
+    transform: rotate(45deg);
+}
+
+.btn-qty-badge {
+    background-color: var(--primary-color);
+    transform: rotateZ(-45deg) translate3d(0px, -8px, 0) !important;
+}
