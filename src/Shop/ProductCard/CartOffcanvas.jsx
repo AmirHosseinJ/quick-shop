@@ -59,23 +59,33 @@ export default function CartOffcanvas({formatIRR, onRemoveRemoteItem, onCheckout
     // Clear the entire Woo cart, then clear local
     const handleClearAll = async () => {
         if (!items.length || clearing) return;
-        try {
-            setClearing(true);
-            await httpClient.delete("/cart/items", {
-                headers: {Nonce: nonce || ""},
-            });
-            // keep UI in sync after server success
+
+        // Check if any item has a key (meaning it was added remotely)
+        const hasRemoteItems = items.some(item => item.key);
+
+        if (hasRemoteItems) {
+            try {
+                setClearing(true);
+                // Call the API to clear the cart remotely
+                await httpClient.delete("/cart/items", {
+                    headers: {Nonce: nonce || ""},
+                });
+                // Keep UI in sync after server success
+                clear();
+                console.log("Cart cleared remotely and locally");
+            } catch (err) {
+                console.error("Failed to clear WooCommerce cart:", err);
+                alert("خطا در پاک کردن سبد خرید. لطفاً دوباره تلاش کنید.");
+            } finally {
+                setClearing(false);
+            }
+        } else {
+            // If no remote items, just clear locally
             clear();
-            console.log("Cart cleared remotely and locally");
-        } catch (err) {
-            console.error("Failed to clear WooCommerce cart:", err);
-            // optional: still clear UI if you want a “best effort” UX
-            // clear();
-            alert("خطا در پاک کردن سبد خرید. لطفاً دوباره تلاش کنید.");
-        } finally {
-            setClearing(false);
+            console.log("Cart cleared locally (no remote items found).");
         }
     };
+
 
     return (
         <div
