@@ -62,7 +62,7 @@ export default function CartOffcanvas({formatIRR, onRemoveRemoteItem, onCheckout
         try {
             setClearing(true);
             await httpClient.delete("/cart/items", {
-                headers: { Nonce: nonce || "" },
+                headers: {Nonce: nonce || ""},
             });
             // keep UI in sync after server success
             clear();
@@ -90,7 +90,8 @@ export default function CartOffcanvas({formatIRR, onRemoveRemoteItem, onCheckout
                         <h5 className="offcanvas-title" id="cartOffcanvasLabel">سبد خرید</h5>
                     </div>
                     <div className="">
-                        <button type="button" className="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                        <button type="button" className="btn-close" data-bs-dismiss="offcanvas"
+                                aria-label="Close"></button>
                     </div>
                 </div>
 
@@ -119,8 +120,17 @@ export default function CartOffcanvas({formatIRR, onRemoveRemoteItem, onCheckout
                                 </div>
                                 <button
                                     className="btn btn-sm btn-outline-secondary"
-                                    onClick={() => handleChangeQty(x, (x.qty - (x.step ?? 1)))}
-                                    disabled={x.qty <= (x.min_qty ?? 1)}
+                                    onClick={() => {
+                                        if (x.qty <= 1) {
+                                            // remove (remote if key, local otherwise)
+                                            handleRemove(x);
+                                        } else {
+                                            const step = x.step ?? 1;
+                                            const next = x.qty - step;
+                                            handleChangeQty(x, next);
+                                        }
+                                    }}
+                                    disabled={x.qty <= 0}
                                 >
                                     −
                                 </button>
@@ -164,28 +174,26 @@ export default function CartOffcanvas({formatIRR, onRemoveRemoteItem, onCheckout
                         <div className="fw-bold text-success">{formatIRR(total)}</div>
                     </div>
 
-                        <div className="row  justify-content-between">
-                            <div className="col-5 col-sm-4">
-                                <button
-                                    className="btn btn-outline-danger w-100"
-                                    onClick={handleClearAll}
-                                    disabled={!items.length || clearing}
-                                >
-                                    پاک کردن
-                                </button>
-                            </div>
-                            <div className="col-7 col-sm-8">
-                                <button
-                                    className="btn btn-success w-100"
-                                    disabled={!items.length}
-                                    data-bs-dismiss="offcanvas"  // This will close the offcanvas when clicked
-                                >
-                                    ادامه خرید
-                                </button>
-                            </div>
+                    <div className="row  justify-content-between">
+                        <div className="col-5 col-sm-4">
+                            <button
+                                className="btn btn-outline-danger w-100"
+                                onClick={handleClearAll}
+                                disabled={!items.length || clearing}
+                            >
+                                پاک کردن
+                            </button>
                         </div>
-
-
+                        <div className="col-7 col-sm-8">
+                            <button
+                                className="btn btn-success w-100"
+                                disabled={!items.length}
+                                data-bs-dismiss="offcanvas"  // This will close the offcanvas when clicked
+                            >
+                                ادامه خرید
+                            </button>
+                        </div>
+                    </div>
 
 
                     <div className="d-flex mt-2">

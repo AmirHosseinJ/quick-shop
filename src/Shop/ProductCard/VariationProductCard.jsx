@@ -43,7 +43,7 @@ function findMatchingVariation(variations, selectedAttrs) {
     });
 }
 
-export default function VariationProductCard({product, formatIRR, onUpdateQty}) {
+export default function VariationProductCard({product, formatIRR, onUpdateQty, onRemoveItem}) {
     const {items, addItem, setQty, removeItem} = useCart();
 
     const updateRef = useRef(onUpdateQty);
@@ -59,6 +59,7 @@ export default function VariationProductCard({product, formatIRR, onUpdateQty}) 
         }),
         []
     );
+    useEffect(() => () => debouncedUpdateQty.cancel(), [debouncedUpdateQty]);
 
     const variations = product?.variations || [];
     const attrOptions = useMemo(() => buildAttributeOptions(variations), [variations]);
@@ -86,6 +87,14 @@ export default function VariationProductCard({product, formatIRR, onUpdateQty}) 
 
     const currentItem = useMemo(() => items.find((x) => x.id === cartId), [items, cartId]);
 
+    const removeHere = async () => {
+        const item = currentItem || {id: cartId, name: nameWithAttrs};
+        if (item?.key && typeof onRemoveItem === "function") {
+            await onRemoveItem(item);     // remote remove + local sync
+        } else {
+            removeItem(cartId);           // local only
+        }
+    };
     // Resolve display values
     const image =
         selectedVariation?.image ||
@@ -136,19 +145,18 @@ export default function VariationProductCard({product, formatIRR, onUpdateQty}) 
         debouncedUpdateQty(currentItem || {id: selectedVariation.id, name: nameWithAttrs}, Math.max(1, min));
     };
 
-    const handleChange = (nextVal) => {
+    const handleChange = async (nextVal) => {
         if (!selectedVariation) return;
-        const next = Math.max(min, Math.floor(Number(nextVal || 0)));
-
-        if (isSoldIndividually) {
-            if (next <= 0) removeItem(cartId);
-            else setQty(cartId, 1);
+        const raw = Math.floor(Number(nextVal || 0));
+        if (!Number.isFinite(raw) || raw <= 0) {
+            await removeHere();
             return;
         }
+        const next = Math.max(min, raw)
 
-        if (next <= 0) {
-            removeItem(cartId);
-            debouncedUpdateQty(currentItem || {id: cartId}, 0);
+        if (isSoldIndividually) {
+            setQty(cartId, 1);
+            debouncedUpdateQty(currentItem || {id: cartId}, 1);
             return;
         }
 
@@ -158,25 +166,15 @@ export default function VariationProductCard({product, formatIRR, onUpdateQty}) 
         debouncedUpdateQty(currentItem || {id: cartId}, snapped);
     };
 
-    const onMinus = () => {
+    const onMinus = async () => {
         if (!selectedVariation) return;
-        const ql = selectedVariation?.quantity_limits || product?.quantity_limits || {};
-        const min = Number.isFinite(ql?.minimum) ? ql.minimum : 1;
-
-        if ((selectedVariation?.sold_individually ?? product?.sold_individually)) {
-            removeItem(cartId);
-            debouncedUpdateQty(currentItem || {id: cartId}, 0);
+        if (qtyInCart <= 1 || isSoldIndividually) {
+            await removeHere();
             return;
         }
-
-        if (qtyInCart > min) {
-            const n = Math.max(min, qtyInCart - (Number.isFinite(ql?.multiple_of) ? Math.max(1, ql.multiple_of) : 1));
-            setQty(cartId, n);
-            debouncedUpdateQty(currentItem || {id: cartId}, n);
-        } else {
-            removeItem(cartId);
-            debouncedUpdateQty(currentItem || {id: cartId}, 0);
-        }
+        const n = Math.max(min, qtyInCart - step);
+        setQty(cartId, n);
+        debouncedUpdateQty(currentItem || {id: cartId}, n);
     };
 
     const onPlus = () => {
@@ -275,7 +273,7 @@ export default function VariationProductCard({product, formatIRR, onUpdateQty}) 
                                             <button
                                                 className="btn btn-outline-secondary"
                                                 onClick={onMinus}
-                                                disabled={isSoldIndividually ? qtyInCart <= 0 : qtyInCart <= min}
+                                                disabled={qtyInCart <= 0}
                                             >
                                                 −
                                             </button>
@@ -284,7 +282,7 @@ export default function VariationProductCard({product, formatIRR, onUpdateQty}) 
                                             <input
                                                 type="number"
                                                 className="form-control form-control-sm qty-input text-center"
-                                                id={"qty-input-"+cartId}
+                                                id={"qty-input-" + cartId}
                                                 min={isSoldIndividually ? 1 : min}
                                                 step={isSoldIndividually ? 1 : step}
                                                 max={isSoldIndividually ? 1 : (Number.isFinite(max) ? max : undefined)}

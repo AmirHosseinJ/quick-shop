@@ -13,7 +13,8 @@ export default function ProductCard({
                                         formatIRR,
                                         quantity_limits,
                                         sold_individually,
-                                        onUpdateQty
+                                        onUpdateQty,
+                                        onRemoveItem
                                     }) {
     const {items, addItem, setQty, removeItem} = useCart();
 
@@ -30,6 +31,7 @@ export default function ProductCard({
         }),
         []
     );
+    useEffect(() => () => debouncedUpdateQty.cancel(), [debouncedUpdateQty]);
 
     const qty = useMemo(() => {
         const found = items.find((x) => x.id === id);
@@ -67,41 +69,33 @@ export default function ProductCard({
 
     };
 
-    const handleChange = (nextVal) => {
-        // Clamp & normalize
-        const next = Math.max(min, Math.floor(Number(nextVal || 0)));
-        if (isSoldIndividually) {
-            if (next <= 0) removeItem(id);
-            else setQty(id, 1);
-            debouncedUpdateQty(currentItem || {id, name, brand, price}, next <= 0 ? 0 : 1);
-            return;
-        }
-        if (next <= 0) {
-            removeItem(id);
-            debouncedUpdateQty(currentItem || {id, name, brand, price}, 0);
-            return;
-        }
-        const clamped = Math.min(next, Number.isFinite(max) ? max : next);
-        // Snap to step
-        const snapped = Math.max(min, clamped - ((clamped - min) % step));
-        setQty(id, snapped);
-        debouncedUpdateQty(currentItem || {id, name, brand, price}, snapped);
-    };
+     const handleChange = async (nextVal) => {
+               const raw = Math.floor(Number(nextVal || 0));
+           if (!Number.isFinite(raw) || raw <= 0) {
+                 await removeHere();
+                 return;
+               }
+           if (isSoldIndividually) {
+                 setQty(id, 1);
+                 debouncedUpdateQty(currentItem || { id, name, brand, price }, 1);
+                 return;
+               }
+           const clamped = Math.min(raw, Number.isFinite(max) ? max : raw);
+           const snapped = Math.max(min, clamped - ((clamped - min) % step));
+           setQty(id, snapped);
+           debouncedUpdateQty(currentItem || { id, name, brand, price }, snapped);
+         };
 
-    const onMinus = () => {
-        if (isSoldIndividually) {
-            removeItem(id);
-            debouncedUpdateQty(currentItem || {id, name, brand, price}, 0);
+    const onMinus = async () => {
+        // When qty <= 1 → remove
+        if (qty <= 1 || isSoldIndividually) {
+            await removeHere();
             return;
         }
-        if (qty > min) {
-            const n = Math.max(min, qty - step);
-            setQty(id, n);
-            debouncedUpdateQty(currentItem || {id, name, brand, price}, n);
-        } else {
-            removeItem(id);
-            debouncedUpdateQty(currentItem || {id, name, brand, price}, 0);
-        }
+        // Otherwise decrement normally
+        const n = Math.max(min, qty - step);
+        setQty(id, n);
+        debouncedUpdateQty(currentItem || {id, name, brand, price}, n);
     };
 
     const onPlus = () => {
@@ -119,6 +113,18 @@ export default function ProductCard({
     };
 
     const displayImg = image || "data:image/gif;base64,R0lGODlhAQABAAD/ACw="; // 1x1 fallback
+
+    // inside ProductCard component:
+    const removeHere = async () => {
+        const item = currentItem || {id, name, brand, price};
+        if (item?.key && typeof onRemoveItem === "function") {
+            // Remote remove (also removes from local via your provided handler)
+            await onRemoveItem(item);
+        } else {
+            // Local-only remove
+            removeItem(id);
+        }
+    };
 
     return (
         <div className="col-sm-6 col-md-4 col-lg-3 col-12">
@@ -162,7 +168,7 @@ export default function ProductCard({
                                             <button
                                                 className="btn btn-outline-secondary"
                                                 onClick={onMinus}
-                                                disabled={isSoldIndividually ? qty <= 0 : qty <= min}
+                                                disabled={qty <= 0}
                                             >
                                                 −
                                             </button>
@@ -171,7 +177,7 @@ export default function ProductCard({
                                             <input
                                                 type="number"
                                                 className="form-control form-control-sm qty-input text-center"
-                                                id={"qty-input-"+id}
+                                                id={"qty-input-" + id}
                                                 min={isSoldIndividually ? 1 : min}
                                                 step={isSoldIndividually ? 1 : step}
                                                 max={isSoldIndividually ? 1 : (Number.isFinite(max) ? max : undefined)}

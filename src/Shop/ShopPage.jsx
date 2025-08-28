@@ -346,6 +346,7 @@ export default function ShopPage() {
                                                 product={p}
                                                 formatIRR={formatIRR} // pass your formatter
                                                 onUpdateQty={onUpdateQty}
+                                                onRemoveItem={removeRemoteItem}
                                             />
                                         ) : (
                                             <ProductCard
@@ -359,6 +360,7 @@ export default function ShopPage() {
                                                 quantity_limits={p.quantity_limits}
                                                 sold_individually={!!p.sold_individually}
                                                 onUpdateQty={onUpdateQty}
+                                                onRemoveItem={removeRemoteItem}
                                             />
                                         )
                                     )}
