@@ -84,7 +84,7 @@ export default function CartOffcanvas({formatIRR, onRemoveRemoteItem, onCheckout
             id="cartOffcanvas"
             aria-labelledby="cartOffcanvasLabel"
         >
-            <div className="offcanvas-header mt-2">
+            <div className="offcanvas-header mt-4">
                 <div className=" d-flex px-2 w-100 justify-content-between">
                     <div className="">
                         <h5 className="offcanvas-title" id="cartOffcanvasLabel">سبد خرید</h5>
@@ -101,7 +101,7 @@ export default function CartOffcanvas({formatIRR, onRemoveRemoteItem, onCheckout
                 {items.length === 0 ? (
                     <div className="text-center text-muted">سبد خالی است.</div>
                 ) : (
-                    <ul className="list-group mb-3">
+                    <ul className="list-group mb-3 offcanvas-list">
                         {items.map((x) => (
                             <li className="list-group-item d-flex gap-2 align-items-center"
                                 key={x.key || `${x.id}-${x.name}`}>

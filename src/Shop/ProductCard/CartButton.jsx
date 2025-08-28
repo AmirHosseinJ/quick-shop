@@ -40,7 +40,7 @@ export default function CartButton() {
                         //     {count}
                         // </span>
                         <span
-                            className="position-absolute top-0 start-0 translate-middle badge rounded-pill  btn-qty-badge">
+                            className="position-absolute top-0 start-0 badge rounded-pill  btn-qty-badge">
                         {count}
                     </span>
                     }

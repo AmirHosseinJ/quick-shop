@@ -50,7 +50,7 @@
     }
     .qty-input {
         appearance: textfield;
-        width: 20px;
+        width: 20px !important;
     }
 }
 
@@ -61,7 +61,7 @@
     /*}*/
     .qty-input {
         appearance: textfield;
-        width: 32px;
+        width: 32px !important;
     }
 }
 
@@ -101,3 +101,7 @@
     font-family: 'IRANSansWeb-FaNum-Medium', sans-serif !important;
 }
 
+.offcanvas-list{
+    overflow-y: scroll !important;
+    max-height: 60vh !important;
+}

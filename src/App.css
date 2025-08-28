@@ -20,20 +20,20 @@ body {
 
 
 :root {
-    --primary-color: #274A9A;  /* Medline Primary color */
+    --primary-color: #274A9A !important;  /* Medline Primary color */
 
 }
 
 .list-group-item.active {
        z-index: 2;
-       background-color: var(--primary-color);
-       border-color: var(--primary-color);
+       background-color: var(--primary-color) !important;
+       border-color: var(--primary-color) !important;
    }
 
 .btn-primary {
     --bs-btn-color: #fff;
-    --bs-btn-bg: var(--primary-color);
-    --bs-btn-border-color: var(--primary-color);
+    --bs-btn-bg: var(--primary-color) !important;
+    --bs-btn-border-color: var(--primary-color) !important;
     --bs-btn-hover-color: #fff;
     --bs-btn-hover-bg: #0b5ed7;
     --bs-btn-hover-border-color: #0a58ca;
@@ -48,10 +48,10 @@ body {
 }
 
 .btn-outline-primary {
-    --bs-btn-color: var(--primary-color);
-    --bs-btn-border-color: var(--primary-color);
+    --bs-btn-color: var(--primary-color) !important;
+    --bs-btn-border-color: var(--primary-color) !important;
     --bs-btn-hover-color: #fff;
-    --bs-btn-hover-bg: var(--primary-color);
+    --bs-btn-hover-bg: var(--primary-color) !important;
     --bs-btn-hover-border-color: #0d6efd;
     --bs-btn-focus-shadow-rgb: 13, 110, 253;
     --bs-btn-active-color: #fff;
@@ -65,8 +65,8 @@ body {
 }
 
 .btn.active{
-        background-color: var(--primary-color);
-        border-color: var(--primary-color);
+        background-color: var(--primary-color) !important;
+        border-color: var(--primary-color) !important;
 
 }
 

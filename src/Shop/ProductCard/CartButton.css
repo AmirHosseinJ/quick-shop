@@ -28,7 +28,7 @@
 
 
 .custom-btn:hover {
-    background-color: #f8f8f8;
+    background-color: #ffffff;
     border-color: #dcdcdc;
     box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
 }
@@ -36,12 +36,14 @@
 .square {
     width: 54px; /* Set the width */
     height: 54px; /* Set the height (same as width for a square) */
-    background-color: #f0f0f0; /* Background color */
+    background-color: #ffffff; /* Background color */
     border-radius: 25%; /* Rounded corners */
     transform: rotate(45deg);
+    border: 1px solid rgba(255, 255, 255, 0.73);
 }
 
 .btn-qty-badge {
     background-color: var(--primary-color);
     transform: rotateZ(-45deg) translate3d(0px, -8px, 0) !important;
+    font-family: 'IRANSansWeb-FaNum-Medium', sans-serif !important;
 }
