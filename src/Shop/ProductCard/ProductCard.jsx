@@ -12,6 +12,7 @@ export default function ProductCard({
                                         price,
                                         formatIRR,
                                         quantity_limits,
+                                        stockStatus,
                                         sold_individually,
                                         onUpdateQty,
                                         onRemoveItem
@@ -200,6 +201,13 @@ export default function ProductCard({
                                         </div>
                                     )}
                                 </div>
+                            </div>
+
+                            <div className="text-center">
+                                {stockStatus === "instock" && <small className="text-success">موجود</small>}
+                                {stockStatus === "onbackorder" &&
+                                    <small className="text-warning">پیش‌سفارش</small>}
+                                {stockStatus === "outofstock" && <small className="text-danger">ناموجود</small>}
                             </div>
                         </div>
                     </div>

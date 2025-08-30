@@ -356,6 +356,7 @@ export default function ShopPage() {
                                                 name={p.name}
                                                 brand={(p?.brands || []).map((b) => b?.name).filter(Boolean).join(", ") || "عمومی"}
                                                 price={Number(p.price ?? p?.prices?.price ?? 0)}
+                                                stockStatus = {p.stock_status}
                                                 formatIRR={formatIRR}
                                                 quantity_limits={p.quantity_limits}
                                                 sold_individually={!!p.sold_individually}
