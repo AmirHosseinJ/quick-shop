@@ -308,14 +308,14 @@ export default function VariationProductCard({product, formatIRR, onUpdateQty, o
                                 </div>
 
                                 {/* Stock hint */}
-                                {selectedVariation && (
-                                    <div className="text-center">
-                                        {stockStatus === "instock" && <small className="text-success">موجود</small>}
-                                        {stockStatus === "onbackorder" &&
-                                            <small className="text-warning">پیش‌سفارش</small>}
-                                        {stockStatus === "outofstock" && <small className="text-danger">ناموجود</small>}
-                                    </div>
-                                )}
+                                {/*{selectedVariation && (*/}
+                                {/*    // <div className="text-center">*/}
+                                {/*    //     {stockStatus === "instock" && <small className="text-success">موجود</small>}*/}
+                                {/*    //     {stockStatus === "onbackorder" &&*/}
+                                {/*    //         <small className="text-warning">پیش‌سفارش</small>}*/}
+                                {/*    //     {stockStatus === "outofstock" && <small className="text-danger">ناموجود</small>}*/}
+                                {/*    // </div>*/}
+                                {/*)}*/}
                             </div>
                         </div>
                     </div>
