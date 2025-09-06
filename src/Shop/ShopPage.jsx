@@ -221,18 +221,40 @@ export default function ShopPage() {
                     })),
             };
 
-            const res = await wooHttpClient.post("/batch", payload);
-            const responses = res?.data?.responses || [];
-            const allOk = responses.every((r) => r?.status === 201);
+            // Check if there are any items to add
+            if (payload.requests.length > 0) {
+                try {
+                    // Send the batch request to WooCommerce
+                    const res = await wooHttpClient.post("/batch", payload);
 
-            if (allOk) {
-                const target = cart_token
-                    ? `${base}/checkout?cart_token=${encodeURIComponent(cart_token)}`
-                    : `${base}/checkout`;
-                // console.log('target', target);
-                window.location.href = target;
+                    // Extract responses from the response data
+                    const responses = res?.data?.responses || [];
+
+                    // Check if all responses have status 201 (success)
+                    const allOk = responses.every((r) => r?.status === 201);
+
+                    if (allOk) {
+                        // Redirect to checkout if all items were successfully added
+                        // const target = cart_token
+                        //     ? `${base}/checkout?cart_token=${encodeURIComponent(cart_token)}`
+                        //     : `${base}/checkout`;
+                        const target = `${base}/checkout`
+                        console.log('target', target);
+                        window.location.href = target;  // Uncomment this to actually redirect
+                    } else {
+                        console.error("Some items failed to add:", responses);
+                    }
+                } catch (error) {
+                    console.error("Error during batch request:", error);
+                }
             } else {
-                console.error("Some items failed to add:", responses);
+                // If there are no items to add, go to checkout directly
+                // const target = cart_token
+                //     ? `${base}/checkout?cart_token=${encodeURIComponent(cart_token)}`
+                //     : `${base}/checkout`;
+                const target = `${base}/checkout`
+                console.log('target', target);
+                window.location.href = target;  // Uncomment this to actually redirect
             }
         },
         [wooHttpClient, nonce, cart_token]
