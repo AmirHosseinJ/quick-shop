@@ -200,7 +200,7 @@ export default function CartOffcanvas({formatIRR, onRemoveRemoteItem, onCheckout
                                 disabled={!items.length}
                                 data-bs-dismiss="offcanvas"  // This will close the offcanvas when clicked
                             >
-                                ادامه خرید
+                                بازگشت به صفحه خرید
                             </button>
                         </div>
                     </div>
