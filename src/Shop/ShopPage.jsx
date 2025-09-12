@@ -108,7 +108,7 @@ export default function ShopPage() {
                     return [...new Map(merged.map((p) => [p.id, p])).values()]; // dedupe by id
                 });
 
-                // add brands for this category only
+                // Extract brands, sort by numerical prefix or alphabetically
                 const productBrands = [
                     ...new Set(
                         items.flatMap((p) =>
@@ -116,7 +116,29 @@ export default function ShopPage() {
                         )
                     ),
                 ];
-                setBrandsByCategory((prev) => ({...prev, [cat]: productBrands}));
+
+// Sort brands by the presence of a numerical prefix and handle both cases
+                const sortedBrands = productBrands.sort((a, b) => {
+                    const isANumeric = /^\d+-/.test(a);  // Checks if `a` has a numeric prefix (e.g., 1-BrandA)
+                    const isBNumeric = /^\d+-/.test(b);  // Checks if `b` has a numeric prefix
+
+                    if (isANumeric && isBNumeric) {
+                        // Both have numeric prefixes, compare based on the number part
+                        const numA = parseInt(a.split('-')[0]);
+                        const numB = parseInt(b.split('-')[0]);
+                        return numA - numB;
+                    }
+
+                    // If one of them has a numeric prefix, put it first
+                    if (isANumeric) return -1; // `a` comes first because it has a numeric prefix
+                    if (isBNumeric) return 1;  // `b` comes first because it has a numeric prefix
+
+                    // If neither have a numeric prefix, compare them alphabetically
+                    return a.localeCompare(b);
+                });
+
+                setBrandsByCategory((prev) => ({...prev, [cat]: sortedBrands}));
+
             } catch (e) {
                 console.error(`Failed to fetch products for ${cat}`, e);
                 setProductsByCategory((prev) => ({...prev, [cat]: []}));
@@ -343,7 +365,7 @@ export default function ShopPage() {
                                     }`}
                                     onClick={() => setSelectedBrand(brand)}
                                 >
-                                    {brand}
+                                    {brand.split('-')[1] || brand}  {/* Remove the numeric prefix when displaying */}
                                 </button>
                             ))}
 
