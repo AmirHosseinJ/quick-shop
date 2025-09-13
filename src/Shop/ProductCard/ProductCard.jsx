@@ -142,7 +142,7 @@ export default function ProductCard({
                     </div>
 
                 </div>
-                <div className="row p-2">
+                <div className="row">
                     <div className="col-6 col-sm-12 align-items-center">
                         <LazyLoadImage
                             src={displayImg} // Image source

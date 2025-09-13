@@ -203,8 +203,14 @@ export default function VariationProductCard({product, formatIRR, onUpdateQty, o
                         {qtyInCart}
                     </span>
                 )}
+                <div className="row d-sm-none d-flex p-2">
+                    <div className=" col-12">
+                        <h6 className="card-title ">{nameWithAttrs}</h6>
+                    </div>
+
+                </div>
                 <div className="row">
-                    <div className="col-6 col-sm-12">
+                    <div className="col-6 col-sm-12 align-items-center">
                         <LazyLoadImage
                             src={image} // Image source
                             alt={product?.name || "product"} // Image alt text
@@ -215,7 +221,7 @@ export default function VariationProductCard({product, formatIRR, onUpdateQty, o
                     </div>
                     <div className="col-6 col-sm-12">
                         <div className="card-body d-flex flex-column">
-                            <h6 className="card-title">{nameWithAttrs}</h6>
+                            <h6 className="card-title d-none d-sm-flex justify-content-center">{nameWithAttrs}</h6>
                             <small className="text-muted">
                                 {(product?.brands || []).map((b) => b.name).join("، ")}
                             </small>
@@ -249,7 +255,7 @@ export default function VariationProductCard({product, formatIRR, onUpdateQty, o
                                 </div>
                             )}
 
-
+                            {/*cart btns*/}
                             <div className="mt-auto">
                                 <div className="d-flex align-items-center justify-content-center mb-2">
                                     <div className="fw-bold text-success">
