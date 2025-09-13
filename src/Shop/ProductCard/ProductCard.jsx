@@ -136,8 +136,14 @@ export default function ProductCard({
                         {qty}
                     </span>
                 )}
-                <div className="row">
-                    <div className="col-6 col-sm-12 align-content-center">
+                <div className="row d-sm-none d-flex p-2">
+                    <div className=" col-12">
+                        <h6 className="card-title ">{name}</h6>
+                    </div>
+
+                </div>
+                <div className="row p-2">
+                    <div className="col-6 col-sm-12 align-items-center">
                         <LazyLoadImage
                             src={displayImg} // Image source
                             alt={name || "product"} // Image alt text
@@ -147,9 +153,11 @@ export default function ProductCard({
                         />
                     </div>
                     <div className=" col-6 col-sm-12">
-                        <div className="card-body d-flex flex-column">
-                            <h6 className="card-title">{name}</h6>
-                            <small className="text-muted">{brand}</small>
+                        <div className="card-body d-flex flex-column ">
+                            <h6 className="card-title d-none d-sm-flex justify-content-center">{name}</h6>
+                            <small className="text-muted">
+                                {brand.split('-')[1] || brand}  {/* Remove the numeric prefix when displaying */}
+                            </small>
 
                             <div className="mt-auto">
                                 <div className="d-flex align-items-center justify-content-center mb-2">
