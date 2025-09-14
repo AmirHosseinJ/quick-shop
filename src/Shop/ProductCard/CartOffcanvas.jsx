@@ -3,7 +3,7 @@ import {useCart} from "../CartContext/CartContext";
 import HttpClient from "../../api/HttpClient.js";
 import debounce from "lodash.debounce";
 
-export default function CartOffcanvas({formatIRR, onRemoveRemoteItem, onCheckout, onUpdateQty}) {
+export default function CartOffcanvas({formatIRR, onRemoveRemoteItem, onCheckout, onSave, onUpdateQty}) {
     const {items, clear, total, setQty} = useCart();
 
     const [clearing, setClearing] = React.useState(false);
@@ -43,6 +43,13 @@ export default function CartOffcanvas({formatIRR, onRemoveRemoteItem, onCheckout
     const handleCheckout = async () => {
         try {
             await onCheckout?.(items);
+        } catch (e) {
+            console.error("Checkout failed:", e);
+        }
+    };
+    const handleSave = async () => {
+        try {
+            await onSave?.(items);
         } catch (e) {
             console.error("Checkout failed:", e);
         }
@@ -186,18 +193,24 @@ export default function CartOffcanvas({formatIRR, onRemoveRemoteItem, onCheckout
 
                     <div className="row  justify-content-between">
                         <div className="col-5 col-sm-4">
+                            {/*<button*/}
+                            {/*    className="btn btn-outline-danger w-100"*/}
+                            {/*    onClick={handleClearAll}*/}
+                            {/*    disabled={!items.length || clearing}*/}
+                            {/*>*/}
+                            {/*    پاک کردن*/}
+                            {/*</button>*/}
                             <button
-                                className="btn btn-outline-danger w-100"
-                                onClick={handleClearAll}
-                                disabled={!items.length || clearing}
+                                className="btn btn-outline-info w-100"
+                                onClick={handleSave}
+                                disabled={!items.length}
                             >
-                                پاک کردن
+                                ذخیره سبد
                             </button>
                         </div>
                         <div className="col-7 col-sm-8">
                             <button
                                 className="btn btn-success w-100"
-                                disabled={!items.length}
                                 data-bs-dismiss="offcanvas"  // This will close the offcanvas when clicked
                             >
                                 بازگشت به صفحه خرید

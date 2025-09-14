@@ -59,34 +59,33 @@ export default function ShopPage() {
         fetchCategories();
     }, [reHttpClient]);
 
+    const fetchCartHeaderToken = async () => {
+        try {
+            const response = await wooHttpClient.get("/cart");
+
+            // Axios lowercases header keys
+            const cartToken = response.headers["cart-token"];
+            const nonce = response.headers["nonce"];
+
+            if (cartToken) {
+                localStorage.setItem(CART_TOKEN_KEY, cartToken);
+                // console.log("Saved cart token:", cartToken);
+            }
+            if (nonce) {
+                localStorage.setItem(NONCE_KEY, nonce);
+                // console.log("Saved nonce:", nonce);
+            }
+
+            const items = response.data?.items || [];
+            setCartItems(items);
+            localStorage.setItem(CART_ITEMS_KEY, JSON.stringify(items));
+        } catch (error) {
+            console.error("Error fetching cart token and items:", error);
+        }
+    };
 
     // Fetch cart (headers + body)
     useEffect(() => {
-        const fetchCartHeaderToken = async () => {
-            try {
-                const response = await wooHttpClient.get("/cart");
-
-                // Axios lowercases header keys
-                const cartToken = response.headers["cart-token"];
-                const nonce = response.headers["nonce"];
-
-                if (cartToken) {
-                    localStorage.setItem(CART_TOKEN_KEY, cartToken);
-                    // console.log("Saved cart token:", cartToken);
-                }
-                if (nonce) {
-                    localStorage.setItem(NONCE_KEY, nonce);
-                    // console.log("Saved nonce:", nonce);
-                }
-
-                const items = response.data?.items || [];
-                setCartItems(items);
-                localStorage.setItem(CART_ITEMS_KEY, JSON.stringify(items));
-            } catch (error) {
-                console.error("Error fetching cart token and items:", error);
-            }
-        };
-
         fetchCartHeaderToken();
     }, [wooHttpClient]);
 
@@ -282,6 +281,53 @@ export default function ShopPage() {
         [wooHttpClient, nonce, cart_token]
     );
 
+    const saveWithBatch = useCallback(
+        async (liveItems) => {
+            if (!liveItems || liveItems.length === 0) return;
+
+            const payload = {
+                requests: liveItems
+                    // only items without an existing Woo line item key
+                    .filter((item) => !item.key)
+                    .map((item) => ({
+                        path: "/wc/store/v1/cart/add-item",
+                        method: "POST",
+                        cache: "no-store",
+                        body: {
+                            id: item.id,
+                            quantity: Number(item.qty || 1),
+                        },
+                        headers: {Nonce: nonce},
+                    })),
+            };
+
+            // Check if there are any items to add
+            if (payload.requests.length > 0) {
+                try {
+                    // Send the batch request to WooCommerce
+                    const res = await wooHttpClient.post("/batch", payload);
+
+                    // Extract responses from the response data
+                    const responses = res?.data?.responses || [];
+
+                    // Check if all responses have status 201 (success)
+                    const allOk = responses.every((r) => r?.status === 201);
+
+                    if (allOk) {
+                        fetchCartHeaderToken();
+                        alert('سبد خرید با موفقیت ذخیره شد')
+                    } else {
+                        console.error("Some items failed to add:", responses);
+
+                    }
+                } catch (error) {
+                    console.error("Error during batch request:", error);
+                }
+            }
+        },
+        [wooHttpClient, nonce, cart_token]
+    );
+
     // ShopPage.jsx (add this next to removeRemoteItem & checkoutWithBatch)
     const onUpdateQty = useCallback(
         async (item, nextQty) => {
@@ -325,7 +371,8 @@ export default function ShopPage() {
                     <div>دسته بندی ها</div>
 
                     {/* Categories */}
-                    <div className="d-flex gap-2 overflow-x-auto mb-4 justify-content-sm-center justify-content-start pt-2 ">
+                    <div
+                        className="d-flex gap-2 overflow-x-auto mb-4 justify-content-sm-center justify-content-start pt-2 ">
                         {categories.map((cat) => (
                             <button
                                 key={cat}
@@ -365,7 +412,7 @@ export default function ShopPage() {
                                     }`}
                                     onClick={() => setSelectedBrand(brand)}
                                 >
-                                    {brand.split('-')[1] || brand}  {/* Remove the numeric prefix when displaying */}
+                                    {brand.split('-')[1] || brand} {/* Remove the numeric prefix when displaying */}
                                 </button>
                             ))}
 
@@ -400,7 +447,7 @@ export default function ShopPage() {
                                                 name={p.name}
                                                 brand={(p?.brands || []).map((b) => b?.name).filter(Boolean).join(", ") || "عمومی"}
                                                 price={Number(p.price ?? p?.prices?.price ?? 0)}
-                                                stockStatus = {p.stock_status}
+                                                stockStatus={p.stock_status}
                                                 formatIRR={formatIRR}
                                                 quantity_limits={p.quantity_limits}
                                                 sold_individually={!!p.sold_individually}
@@ -420,6 +467,7 @@ export default function ShopPage() {
                 formatIRR={formatIRR}
                 onRemoveRemoteItem={removeRemoteItem}
                 onCheckout={checkoutWithBatch}
+                onSave={saveWithBatch}
                 onUpdateQty={onUpdateQty}
             />
         </>
