@@ -8,7 +8,8 @@ import "./ShopPage.css";
 import HttpClient from "../api/HttpClient.js";
 import VariationProductCard from "./ProductCard/VariationProductCard";
 import {useCart} from "./CartContext/CartContext.jsx";
-
+import Swal from "sweetalert2";
+import 'sweetalert2/themes/bootstrap-5.css'
 // ===== Consistent storage keys =====
 const CART_TOKEN_KEY = "wc_cart_token";
 const NONCE_KEY = "wc_nonce";
@@ -23,6 +24,13 @@ export default function ShopPage() {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [cartItems, setCartItems] = useState([]);
+
+    //store message options
+    const [messageOptions, setMessageOptions] = useState({
+        "chbx_dialog": "0",
+        "chbx_header": "0",
+        "message_input": ""
+    });
 
     const [productsByCategory, setProductsByCategory] = useState({}); // { cat: [] }
     const [loadingCats, setLoadingCats] = useState(new Set());       // track cats loading
@@ -363,11 +371,52 @@ export default function ShopPage() {
         ? (brandsByCategory[selectedCategory] || [])
         : Object.values(brandsByCategory).flat(); // if "All" mode, show merged
 
+    const fetchMessageOptions = async () => {
+        try {
+            const res = await reHttpClient.get("/shop-message-options");
+            const message_options = res.data?.data || [];
+            setMessageOptions(message_options);
+
+        } catch (e) {
+            console.error(`Failed to fetch Message Options`, e);
+        }
+    };
+
+    useEffect(() => {
+        fetchMessageOptions();
+    }, []);
+
+
+    useEffect(() => {
+
+
+        if (messageOptions.chbx_dialog === "1") {
+            Swal.fire({
+                // title: "پیام مدیریت",
+                html: `<div className="card mx-auto w-75 mb-3 border-danger bg-danger-subtle bg-opacity-5">
+                            <span className="p-2 text-wrap fs-3">${messageOptions.message_input}</span>
+                        </div>`,
+                icon: "warning",
+                theme: 'bootstrap-5',
+                showCancelButton: false,
+                confirmButtonColor: "#274A9A",
+                confirmButtonText: "متوجه شدم",
+            });
+        }
+
+    }, [messageOptions.chbx_dialog]);
+
 
     return (
         <>
             <div className="container-fluid py-4">
                 <div className="row sticky-top pt-2" id="categories-menu">
+                    {messageOptions.chbx_header === "1" ? (
+                        <div className="card mx-auto w-75 mb-3 border-danger bg-danger-subtle bg-opacity-5">
+                            <span className="p-2 text-wrap fs-3">{messageOptions.message_input}</span>
+                        </div>
+                    ) : null}
+
                     <div>دسته بندی ها</div>
 
                     {/* Categories */}
