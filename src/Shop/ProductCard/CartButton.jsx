@@ -1,4 +1,4 @@
-import React, {useEffect, useRef} from "react";
+import React, {useRef} from "react";
 import {useCart} from "../CartContext/CartContext";
 import './CartButton.css'
 import cartIcon from "../../assets/check-it-out.svg";
@@ -10,18 +10,16 @@ export default function CartButton() {
     // If Offcanvas isn’t mounted, button still shows badge
     return (
         <div className="fixed-bottom">
-            {/*<button*/}
+
+            {/*<a*/}
+            {/*    className="custom-btn square"*/}
+            {/*    id="custom-homebut"*/}
             {/*    ref={btnRef}*/}
-            {/*    type="button"*/}
-            {/*    className="btn btn-primary cart-fab sticky-bottom "*/}
             {/*    data-bs-toggle="offcanvas"*/}
             {/*    data-bs-target="#cartOffcanvas"*/}
-            {/*    aria-controls="cartOffcanvas"*/}
             {/*>*/}
-            {/*    🛒*/}
-            {/*    {count > 0 && <span className="badge bg-light text-dark ms-2">{count}</span>}*/}
-            {/*</button>*/}
-            <a
+            <button
+                type="button"
                 className="custom-btn square"
                 id="custom-homebut"
                 ref={btnRef}
@@ -46,7 +44,8 @@ export default function CartButton() {
                     }
 
                 </span>
-            </a>
+                {/*</a>*/}
+            </button>
 
         </div>
 
