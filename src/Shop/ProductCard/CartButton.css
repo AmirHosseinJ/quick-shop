@@ -1,4 +1,4 @@
-.custom-btn {
+#custom-homebut {
     display: inline-flex;
     justify-content: center;
     align-items: center;
@@ -13,36 +13,36 @@
     margin-bottom: 2.5rem;
 }
 
-.custom-icon-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+#custom-homebut {
+    width: 54px; /* Set the width */
+    height: 54px; /* Set the height (same as width for a square) */
+    background-color: #ffffff; /* Background color */
+    border-radius: 25% !important; /* Rounded corners */
+    transform: rotate(45deg);
+    border: 1px solid rgba(255, 255, 255, 0.73);
 }
 
-.custom-icon-cart-check {
-    width: 24px; /* Adjust size of the image */
-    height: 24px; /* Adjust size of the image */
-    color-interpolation: var(--primary-color);
-    transform: rotate(-45deg);
-}
-
-
-.custom-btn:hover {
+#custom-homebut:hover {
     background-color: #ffffff;
     border-color: #dcdcdc;
     box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
 }
 
-.square {
-    width: 54px; /* Set the width */
-    height: 54px; /* Set the height (same as width for a square) */
-    background-color: #ffffff; /* Background color */
-    border-radius: 25%; /* Rounded corners */
-    transform: rotate(45deg);
-    border: 1px solid rgba(255, 255, 255, 0.73);
+#custom-icon-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.btn-qty-badge {
+#custom-icon-cart-check {
+    width: 24px;
+    height: 24px;
+    max-width: none !important;
+    color-interpolation: var(--primary-color);
+    transform: rotate(-45deg);
+}
+
+#btn-qty-badge {
     background-color: var(--primary-color);
     transform: rotateZ(-45deg) translate3d(0px, -8px, 0) !important;
     font-family: 'IRANSansWeb-FaNum-Medium', sans-serif !important;

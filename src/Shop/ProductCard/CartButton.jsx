@@ -27,18 +27,20 @@ export default function CartButton() {
                 data-bs-target="#cartOffcanvas"
             >
 
-                <span className="custom-icon-container ">
+                <span id="custom-icon-container">
                    <img
                        src={cartIcon}
                        alt="Cart Icon"
-                       className="custom-icon-cart-check "
+                       id="custom-icon-cart-check"
+                       className="custom-icon-cart-check"
                    />
                     {count > 0 &&
                         // <span className="badge bg-light text-dark ms-2">
                         //     {count}
                         // </span>
                         <span
-                            className="position-absolute top-0 start-0 badge rounded-pill  btn-qty-badge">
+                            id="btn-qty-badge"
+                            className="position-absolute top-0 start-0 badge rounded-pill">
                         {count}
                     </span>
                     }
